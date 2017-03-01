@@ -1,0 +1,3 @@
+*.pro*
+.idea/
+cmake-build*/
