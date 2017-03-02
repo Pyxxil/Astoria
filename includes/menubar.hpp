@@ -23,9 +23,10 @@ public:
     QList<QMenu *> &getAllMenus();
 
 private slots:
-    void playNextSong();
     void playOrPause();
     void playPauseChangeText();
+    void playPreviousSong();
+    void playNextSong();
 
 private:
     void setUpMenus();
@@ -38,7 +39,7 @@ private:
     PlayerControls *controls;
 
     QMenu *fileMenu;
-    QMenu *editMenu;
+    QMenu *controlsMenu;
 
     QAction *nextSong;
     QAction *previousSong;

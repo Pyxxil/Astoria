@@ -4,8 +4,10 @@
 #include <QMediaPlayer>
 #include <QWidget>
 
-class QAbstractButton;
+class QLabel;
 class QBoxLayout;
+class QAbstractButton;
+class QAbstractSlider;
 
 class PlayerControls: public QWidget
 {

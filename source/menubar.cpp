@@ -26,34 +26,39 @@ QList<QMenu *> &MenuBar::getAllMenus()
 void MenuBar::setUpMenus()
 {
     fileMenu = new QMenu("&File");
-    editMenu = new QMenu("&Edit");
+    controlsMenu = new QMenu("Controls");
 
     menus.append(fileMenu);
-    menus.append(editMenu);
+    menus.append(controlsMenu);
 }
 
 void MenuBar::setUpActions()
 {
+    previousSong = new QAction("Previous Song");
+    previousSong->setShortcut(Qt::Key_F4);
+    connect(previousSong, &QAction::triggered,
+            this, &MenuBar::playPreviousSong);
+
     nextSong = new QAction("Next Song");
     nextSong->setShortcut(Qt::Key_F6);
-    connect(nextSong, &QAction::triggered, this, &MenuBar::playNextSong);
+    connect(nextSong, &QAction::triggered,
+            this, &MenuBar::playNextSong);
 
     playPause = new QAction(parent->playerState() == QMediaPlayer::PlayingState ? "Pause" : "Play");
     playPause->setShortcut(Qt::Key_F5);
-    connect(playPause, &QAction::triggered, this, &MenuBar::playOrPause);
-    connect(controls, SIGNAL(pause()), this, SLOT(playPauseChangeText()));
-    connect(controls, SIGNAL(play()), this, SLOT(playPauseChangeText()));
+    connect(playPause, &QAction::triggered,
+            this, &MenuBar::playOrPause);
+    connect(controls, SIGNAL(pause()),
+            this, SLOT(playPauseChangeText()));
+    connect(controls, SIGNAL(play()),
+            this, SLOT(playPauseChangeText()));
 }
 
 void MenuBar::connectActions()
 {
-    fileMenu->addAction(nextSong);
-    fileMenu->addAction(playPause);
-}
-
-void MenuBar::playNextSong()
-{
-    emit parent->nextSong();
+    controlsMenu->addAction(previousSong);
+    controlsMenu->addAction(playPause);
+    controlsMenu->addAction(nextSong);
 }
 
 void MenuBar::playOrPause()
@@ -72,4 +77,14 @@ void MenuBar::playPauseChangeText()
     } else {
         playPause->setText("Play");
     }
+}
+
+void MenuBar::playNextSong()
+{
+    emit controls->next();
+}
+
+void MenuBar::playPreviousSong()
+{
+    emit controls->previous();
 }

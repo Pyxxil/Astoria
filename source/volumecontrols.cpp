@@ -12,12 +12,14 @@ VolumeControls::VolumeControls(QWidget *parent)
     muteButton = new QToolButton(this);
     muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
     muteButton->setStyleSheet("border: none;");
-    connect(muteButton, SIGNAL(clicked()), this, SLOT(muteButtonClicked()));
+    connect(muteButton, SIGNAL(clicked()),
+            this, SLOT(muteButtonClicked()));
 
     volumeSlider = new QSlider(Qt::Horizontal, this);
     volumeSlider->setRange(0, 100);
     volumeSlider->setTracking(true);
-    connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeSliderValueChanged()));
+    connect(volumeSlider, SIGNAL(valueChanged(int)),
+            this, SLOT(volumeSliderValueChanged()));
 
     layout = new QHBoxLayout(this);
     layout->setMargin(0);

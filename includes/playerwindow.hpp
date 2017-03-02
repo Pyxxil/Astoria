@@ -16,6 +16,9 @@ class PlayerWindow: public QMainWindow
 {
 Q_OBJECT
 
+signals:
+    void durationChanged(qint64);
+
 public:
     explicit PlayerWindow(QWidget *parent = 0);
     ~PlayerWindow();
@@ -25,6 +28,9 @@ public:
 public slots:
     void nextSong();
     void previousSong();
+    void timeSeek(int);
+    void songChanged(const QMediaContent &);
+    void mediaLoaded(QMediaPlayer::MediaStatus);
 
 private:
     Ui::PlayerWindow *ui;
