@@ -1,7 +1,3 @@
-//
-// Created by pyxxil on 1/03/17.
-//
-
 #ifndef MENUBAR_HPP
 #define MENUBAR_HPP
 
@@ -11,14 +7,20 @@ class QMenu;
 class QAction;
 class QWidget;
 class PlayerWindow;
-class PlayerControls;
 
 class MenuBar : public QObject
 {
 Q_OBJECT
 
+signals:
+    void play();
+    void pause();
+    void gotoNextSong();
+    void gotoPreviousSong();
+    void updateLibrary();
+
 public:
-    MenuBar(PlayerWindow *parent, PlayerControls *controls);
+    MenuBar();
 
     QList<QMenu *> &getAllMenus();
 
@@ -27,6 +29,7 @@ private slots:
     void playPauseChangeText();
     void playPreviousSong();
     void playNextSong();
+    void libraryScanDirectory();
 
 private:
     void setUpMenus();
@@ -36,10 +39,11 @@ private:
     QList<QMenu *> menus;
 
     PlayerWindow *parent;
-    PlayerControls *controls;
 
     QMenu *fileMenu;
     QMenu *controlsMenu;
+
+    QAction *scanDir;
 
     QAction *nextSong;
     QAction *previousSong;

@@ -2,10 +2,12 @@
 #include "ui_playerwindow.h"
 
 #include <QMediaMetaData>
+#include <QDockWidget>
 
 #include "includes/playercontrols.hpp"
 #include "includes/volumecontrols.hpp"
 #include "includes/durationcontrols.hpp"
+#include "includes/librarymodel.hpp"
 #include "includes/menubar.hpp"
 
 /**
@@ -13,22 +15,24 @@
  *	- Allow the stylesheet to be read from a file (.qss file)
  *	- User adjustable previous song time limit (that is, how long into a song does pressing
  *	  the previous button restart the song)
- *		- Maybe have an 'always' setting
+ *	- Allow the user to remove/add headers and change the order of them
+ *	    - These can be picked from whatever metadata can be grabbed
  */
 
 PlayerWindow::PlayerWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::PlayerWindow)
+    : QMainWindow(parent), ui(new Ui::PlayerWindow), lastPreviousClick(QTime::currentTime())
 {
     ui->setupUi(this);
 
     //setWindowTitle(Project);
-    setStyleSheet("background-color: #222222;");
+    //setStyleSheet("background-color: #222222;");
 
     player = new QMediaPlayer(this);
-    player->setMedia(QUrl::fromLocalFile("/home/pyxxil/Downloads/01 - Welcome to the Black Parade.mp3"));
 
-    PlayerControls *playerControls = new PlayerControls(this);
+    PlayerControls *playerControls = new PlayerControls(ui->controlsWidget);
     playerControls->setState(player->state());
+    playerControls->setMinimumWidth(200);
+    playerControls->setMaximumWidth(200);
 
     connect(playerControls, SIGNAL(play()),
             player, SLOT(play()));
@@ -41,11 +45,11 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
             playerControls, SLOT(setState(QMediaPlayer::State)));
 
-    VolumeControls *volumeControls = new VolumeControls(this);
+    VolumeControls *volumeControls = new VolumeControls(ui->controlsWidget);
     volumeControls->setVolume(player->volume());
     volumeControls->setMute(player->isMuted());
-    volumeControls->setMinimumSize(200, 0);
-    volumeControls->setMaximumSize(200, volumeControls->height());
+    volumeControls->setMinimumSize(200, playerControls->height());
+    volumeControls->setMaximumSize(200, playerControls->height());
 
     connect(volumeControls, SIGNAL(changeVolume(int)),
             player, SLOT(setVolume(int)));
@@ -56,7 +60,8 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     connect(player, SIGNAL(mutedChanged(bool)),
             volumeControls, SLOT(setMute(bool)));
 
-    DurationControls *durationControls = new DurationControls(this);
+    DurationControls *durationControls = new DurationControls(ui->durationWidget);
+    durationControls->setMinimumSize(200, playerControls->height());
     connect(player, SIGNAL(positionChanged(qint64)),
             durationControls, SLOT(positionChanged(qint64)));
     connect(durationControls, SIGNAL(seek(int)),
@@ -64,22 +69,37 @@ PlayerWindow::PlayerWindow(QWidget *parent)
 
     connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
             this, SLOT(mediaLoaded(QMediaPlayer::MediaStatus)));
-    connect(player, SIGNAL(currentMediaChanged(const QMediaContent &)),
-            this, SLOT(songChanged(const QMediaContent &)));
     connect(this, SIGNAL(durationChanged(qint64)),
             durationControls, SLOT(songChanged(qint64)));
+    connect(player, SIGNAL(metaDataChanged()), this, SLOT(metaDataChanged()));
 
-    menu = new MenuBar(this, playerControls);
+    library= new LibraryModel();
+    ui->libraryView->setModel(library);
+    connect(library, SIGNAL(libraryUpdated(int, int)), ui->libraryView, SLOT(rowCountChanged(int, int)));
+
+    menu = new MenuBar();
     for (auto &_menu : menu->getAllMenus()) {
         ui->menuBar->addMenu(_menu);
     }
 
-    QHBoxLayout *controlLayout = new QHBoxLayout(this);
+    connect(menu, SIGNAL(play()), playerControls, SIGNAL(play()));
+    connect(menu, SIGNAL(pause()), playerControls, SIGNAL(pause()));
+    connect(menu, SIGNAL(gotoNextSong()), this, SLOT(nextSong()));
+    connect(menu, SIGNAL(gotoPreviousSong()), this, SLOT(previousSong()));
+    connect(menu, SIGNAL(updateLibrary()), library, SLOT(openDirectory()));
+
+    player->setPlaylist(library->playlist);
+
+    QHBoxLayout *controlLayout = new QHBoxLayout;
+    controlLayout->addStretch(1);
     controlLayout->addWidget(playerControls);
+    controlLayout->addStretch(1);
     controlLayout->addWidget(volumeControls);
-    controlLayout->addWidget(durationControls);
 
     ui->controlsWidget->setLayout(controlLayout);
+
+    ui->durationWidget->setLayout(new QVBoxLayout());
+    ui->durationWidget->layout()->addWidget(durationControls);
 }
 
 PlayerWindow::~PlayerWindow()
@@ -89,7 +109,7 @@ PlayerWindow::~PlayerWindow()
 
 void PlayerWindow::nextSong()
 {
-    // Next song in playlist
+    player->playlist()->next();
 }
 
 /**
@@ -100,17 +120,21 @@ void PlayerWindow::nextSong()
 void PlayerWindow::previousSong()
 {
     // TODO: Make the time to go to the previous song adjustable
-    if (player->position() < 10000) {
-        player->setPosition(0);
+    // TODO: Remove this
+    qDebug() << lastPreviousClick.msecsTo(QTime::currentTime());
+    if (player->position() < 10000 || lastPreviousClick.msecsTo(QTime::currentTime()) < 1000) {
+        player->playlist()->previous();
     }
     else {
-        // Previous song in playlist
+        lastPreviousClick = QTime::currentTime();
+        player->setPosition(0);
     }
 }
 
 QMediaPlayer::State PlayerWindow::playerState() const
 {
-    return player->state();
+    if (player == nullptr) { return QMediaPlayer::StoppedState; }
+    else { return player->state(); }
 }
 
 void PlayerWindow::timeSeek(int time)
@@ -118,20 +142,20 @@ void PlayerWindow::timeSeek(int time)
     player->setPosition(time);
 }
 
-void PlayerWindow::songChanged(const QMediaContent &)
-{
-    emit durationChanged(player->duration());
-    setWindowTitle(QString("%1 - %2")
-                       .arg(player->metaData(QMediaMetaData::AlbumArtist).toString())
-                       .arg(player->metaData(QMediaMetaData::Title).toString()));
-}
-
 void PlayerWindow::mediaLoaded(QMediaPlayer::MediaStatus status)
 {
     if (status == QMediaPlayer::LoadedMedia) {
         emit durationChanged(player->duration());
         setWindowTitle(QString("%1 - %2")
-                           .arg(player->metaData(QMediaMetaData::Author).toString())
+                           .arg(player->metaData(QMediaMetaData::ContributingArtist).toString())
                            .arg(player->metaData(QMediaMetaData::Title).toString()));
     }
+}
+
+void PlayerWindow::metaDataChanged()
+{
+    emit durationChanged(player->duration());
+    setWindowTitle(QString("%1 - %2")
+                       .arg(player->metaData(QMediaMetaData::ContributingArtist).toString())
+                       .arg(player->metaData(QMediaMetaData::Title).toString()));
 }

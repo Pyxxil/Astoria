@@ -1,17 +1,10 @@
-//
-// Created by pyxxil on 1/03/17.
-//
-
 #include "includes/menubar.hpp"
 
 #include <QMenu>
 
 #include "includes/playerwindow.hpp"
-#include "includes/playercontrols.hpp"
 
-MenuBar::MenuBar(PlayerWindow *parent, PlayerControls *controls)
-    : parent(parent)
-      , controls(controls)
+MenuBar::MenuBar()
 {
     setUpMenus();
     setUpActions();
@@ -34,6 +27,11 @@ void MenuBar::setUpMenus()
 
 void MenuBar::setUpActions()
 {
+    scanDir = new QAction("Scan Directory");
+    scanDir->setShortcut(Qt::Key_Open);
+    connect(scanDir, &QAction::triggered,
+            this, &MenuBar::libraryScanDirectory);
+
     previousSong = new QAction("Previous Song");
     previousSong->setShortcut(Qt::Key_F4);
     connect(previousSong, &QAction::triggered,
@@ -44,18 +42,17 @@ void MenuBar::setUpActions()
     connect(nextSong, &QAction::triggered,
             this, &MenuBar::playNextSong);
 
-    playPause = new QAction(parent->playerState() == QMediaPlayer::PlayingState ? "Pause" : "Play");
+    // Should probably change this...
+    playPause = new QAction("Play");
     playPause->setShortcut(Qt::Key_F5);
     connect(playPause, &QAction::triggered,
             this, &MenuBar::playOrPause);
-    connect(controls, SIGNAL(pause()),
-            this, SLOT(playPauseChangeText()));
-    connect(controls, SIGNAL(play()),
-            this, SLOT(playPauseChangeText()));
 }
 
 void MenuBar::connectActions()
 {
+    fileMenu->addAction(scanDir);
+
     controlsMenu->addAction(previousSong);
     controlsMenu->addAction(playPause);
     controlsMenu->addAction(nextSong);
@@ -64,10 +61,11 @@ void MenuBar::connectActions()
 void MenuBar::playOrPause()
 {
     if (parent->playerState() == QMediaPlayer::PlayingState) {
-        emit controls->pause();
+        emit pause();
     } else {
-        emit controls->play();
+        emit play();
     }
+    playPauseChangeText();
 }
 
 void MenuBar::playPauseChangeText()
@@ -81,10 +79,15 @@ void MenuBar::playPauseChangeText()
 
 void MenuBar::playNextSong()
 {
-    emit controls->next();
+    emit gotoNextSong();
 }
 
 void MenuBar::playPreviousSong()
 {
-    emit controls->previous();
+    emit gotoPreviousSong();
+}
+
+void MenuBar::libraryScanDirectory()
+{
+    emit updateLibrary();
 }

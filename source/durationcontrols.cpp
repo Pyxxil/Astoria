@@ -18,10 +18,10 @@ DurationControls::DurationControls(QWidget *parent)
     setStyleSheet("QSlider::Handle {image: none;}");
 
     currentTime = new QLabel(this);
-    currentTime->setText("Min");
+    currentTime->setText("0:00");
 
     totalDuration = new QLabel(this);
-    totalDuration->setText("Max");
+    totalDuration->setText("0:00");
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(currentTime);

@@ -4,8 +4,10 @@
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QToolButton>
+#include <QTime>
 
 class MenuBar;
+class LibraryModel;
 
 namespace Ui
 {
@@ -29,13 +31,15 @@ public slots:
     void nextSong();
     void previousSong();
     void timeSeek(int);
-    void songChanged(const QMediaContent &);
     void mediaLoaded(QMediaPlayer::MediaStatus);
+    void metaDataChanged();
 
 private:
     Ui::PlayerWindow *ui;
     QMediaPlayer *player;
+    LibraryModel *library;
     MenuBar *menu;
+    QTime lastPreviousClick;
 };
 
 #endif // PLAYERWINDOW_H
