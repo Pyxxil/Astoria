@@ -8,6 +8,7 @@
 
 class MenuBar;
 class LibraryModel;
+class RightClickMenu;
 
 namespace Ui
 {
@@ -33,6 +34,8 @@ public slots:
     void timeSeek(int);
     void mediaLoaded(QMediaPlayer::MediaStatus);
     void metaDataChanged();
+    void playNow();
+    void customMenuRequested(QPoint pos);
 
 private:
     Ui::PlayerWindow *ui;
@@ -40,6 +43,7 @@ private:
     LibraryModel *library;
     MenuBar *menu;
     QTime lastPreviousClick;
+    RightClickMenu *rightClickMenu;
 };
 
 #endif // PLAYERWINDOW_H

@@ -1,4 +1,4 @@
-#include "includes/volumecontrols.hpp"
+#include "includes/controls/volumecontrols.hpp"
 
 #include <QToolButton>
 #include <QSlider>

@@ -9,7 +9,7 @@ class LibraryModel: public QAbstractTableModel
 Q_OBJECT
 
 signals:
-    void libraryUpdated(int oldCount, int newCount);
+    void libraryUpdated();
 
 public:
     LibraryModel();
@@ -28,6 +28,8 @@ public:
 
     void scanDirectory(QString &directory);
 
+    const QUrl &get(int row) const;
+
 public slots:
     void openDirectory();
     void updateLibrary();
@@ -37,7 +39,7 @@ private:
     int rows;
     QList<QString> supportedFormats;
 
-    QMap<QString, QMap<QString, QString>> library;
+    QMap<QUrl, QMap<QString, QString>> library;
 };
 
 

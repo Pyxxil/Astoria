@@ -1,4 +1,4 @@
-#include "includes/menubar.hpp"
+#include "includes/menus/menubar.hpp"
 
 #include <QMenu>
 

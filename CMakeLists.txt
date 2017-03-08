@@ -16,20 +16,28 @@ SET ( CMAKE_AUTOUIC ON )
 
 SET ( SOURCE_FILES
 	  source/main.cpp
-	  source/playercontrols.cpp
+	  source/controls/playercontrols.cpp
 	  source/playerwindow.cpp
-	  source/volumecontrols.cpp
-	  source/menubar.cpp
-	  source/durationcontrols.cpp
-	  source/librarymodel.cpp source/musicscanner.cpp includes/musicscanner.hpp )
+	  source/controls/volumecontrols.cpp
+	  source/menus/menubar.cpp
+	  source/controls/durationcontrols.cpp
+	  source/library/librarymodel.cpp
+	  source/library/musicscanner.cpp
+	  source/menus/rightclickmenu.cpp
+	  source/controls/durationslider.cpp
+	  )
 
 SET ( INCLUDE_FILES
-      includes/menubar.hpp
-      includes/volumecontrols.hpp
-      includes/playerwindow.hpp
-      includes/playercontrols.hpp
-      includes/durationcontrols.hpp
-      includes/librarymodel.hpp )
+	  includes/menus/menubar.hpp
+	  includes/controls/volumecontrols.hpp
+	  includes/playerwindow.hpp
+	  includes/controls/playercontrols.hpp
+	  includes/controls/durationcontrols.hpp
+	  includes/library/librarymodel.hpp
+	  includes/menus/rightclickmenu.hpp
+	  includes/library/musicscanner.hpp
+	  includes/controls/durationslider.hpp
+	  )
 
 MESSAGE ("SOURCE DIRECTORY: ${CMAKE_SOURCE_DIR}")
 

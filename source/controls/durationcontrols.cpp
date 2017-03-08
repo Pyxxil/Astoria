@@ -1,19 +1,19 @@
-#include "includes/durationcontrols.hpp"
+#include "includes/controls/durationcontrols.hpp"
 
-#include <QSlider>
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QMediaContent>
-#include <QDebug>
 
 #include "includes/playerwindow.hpp"
+#include "includes/controls/durationslider.hpp"
 
 DurationControls::DurationControls(QWidget *parent)
     : QWidget(parent), duration(0)
 {
-    durationSlider = new QSlider(Qt::Horizontal, this);
+    durationSlider = new DurationSlider(this);
     connect(durationSlider, SIGNAL(sliderMoved(int)),
             this, SLOT(durationSliderValueChanged(int)));
+    connect(durationSlider, SIGNAL(seek(int)), this, SIGNAL(seek(int)));
     durationSlider->setValue(0);
     setStyleSheet("QSlider::Handle {image: none;}");
 
@@ -35,7 +35,6 @@ void DurationControls::positionChanged(qint64 position)
 {
     if (duration > 0) {
         durationSlider->setValue(static_cast<int>(position / 1000));
-        qDebug() << "Slider Value " << durationSlider->value();
         currentTime->setText(QString("%1:%2").arg(position / 1000 / 60).arg((position / 1000) % 60, 2, 10, QChar('0')));
     }
 }

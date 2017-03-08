@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-class QAbstractSlider;
 class QLabel;
+class DurationSlider;
 
 class DurationControls : public QWidget
 {
@@ -16,7 +16,7 @@ signals:
 public:
     DurationControls(QWidget *parent = 0);
 
-    QAbstractSlider *durationSlider;
+    DurationSlider *durationSlider;
     QLabel *currentTime;
     QLabel *totalDuration;
     qint64 duration;

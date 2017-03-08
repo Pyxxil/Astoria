@@ -1,9 +1,10 @@
-#include "includes/librarymodel.hpp"
+#include "includes/library/librarymodel.hpp"
 
 #include <QFileDialog>
 #include <QMediaPlayer>
+#include <QAudioDeviceInfo>
 
-#include "includes/musicscanner.hpp"
+#include "includes/library/musicscanner.hpp"
 
 LibraryModel::LibraryModel()
     : columns(5), rows(0)
@@ -21,16 +22,8 @@ LibraryModel::LibraryModel()
     }
 #endif
     ));
-
-#if defined(Q_OS_LINUX)
-
-#elif defined(Q_OS_MACOS)
-
-#elif defined(Q_OS_WIN)
-
-#else
-#error "Unsupported platform"
-#endif
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    supportedFormats = info.supportedCodecs();
 }
 
 bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -62,22 +55,23 @@ Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
-    (void) index;
-    (void) role;
-    if (index.isValid()) {
+    if (index.isValid() && role == Qt::DisplayRole) {
         switch (index.column()) {
         case 0:
-            if (library.keys().count()) {
+            if (library.keys().count() > 0) {
                 return library.values().at(index.row())["Artist"];
             }
             return QVariant();
         case 1:
-            if (library.values().count()) {
+            if (library.values().count() > 0) {
                 return library.values().at(index.row())["Album"];
             }
             return QVariant();
         case 2:
-            return QString();
+            if (library.values().count() > 0) {
+                return library.values().at(index.row())["Title"];
+            }
+            return QVariant();
         case 3:
             return QString();
         default:
@@ -106,9 +100,17 @@ void LibraryModel::scanDirectory(QString &directory)
 
 void LibraryModel::updateLibrary()
 {
-    emit libraryUpdated(rows, library.count());
+    emit libraryUpdated();
     beginInsertRows(QModelIndex(), rows, library.count() - rows);
     insertRows(rows, library.count() - rows);
     endInsertRows();
     rows = library.count();
+    for (auto &song : library.keys()) {
+        playlist->addMedia(song);
+    }
+}
+
+const QUrl &LibraryModel::get(int row) const
+{
+    return library.keys().at(row);
 }

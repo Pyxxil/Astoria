@@ -9,13 +9,13 @@ class MusicScanner : public QThread
     Q_OBJECT
 
 public:
-    MusicScanner(QMap<QString, QMap<QString, QString>> *, QFileInfoList &);
+    MusicScanner(QMap<QUrl, QMap<QString, QString>> *, QFileInfoList &);
 
     void run();
     void setFiles(QFileInfoList &);
 
 private:
-    QMap<QString, QMap<QString, QString>> *library;
+    QMap<QUrl, QMap<QString, QString>> *library;
     QFileInfoList files;
 
 };

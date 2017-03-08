@@ -4,11 +4,12 @@
 #include <QMediaMetaData>
 #include <QDockWidget>
 
-#include "includes/playercontrols.hpp"
-#include "includes/volumecontrols.hpp"
-#include "includes/durationcontrols.hpp"
-#include "includes/librarymodel.hpp"
-#include "includes/menubar.hpp"
+#include "includes/controls/playercontrols.hpp"
+#include "includes/controls/volumecontrols.hpp"
+#include "includes/controls/durationcontrols.hpp"
+#include "includes/library/librarymodel.hpp"
+#include "includes/menus/menubar.hpp"
+#include "includes/menus/rightclickmenu.hpp"
 
 /**
  * To add features list
@@ -73,9 +74,14 @@ PlayerWindow::PlayerWindow(QWidget *parent)
             durationControls, SLOT(songChanged(qint64)));
     connect(player, SIGNAL(metaDataChanged()), this, SLOT(metaDataChanged()));
 
-    library= new LibraryModel();
+    library = new LibraryModel();
     ui->libraryView->setModel(library);
-    connect(library, SIGNAL(libraryUpdated(int, int)), ui->libraryView, SLOT(rowCountChanged(int, int)));
+    ui->libraryView->setContextMenuPolicy(Qt::CustomContextMenu);
+    //connect(library, SIGNAL(libraryUpdated()), this, SLOT(updatePlaylist()));
+    player->setPlaylist(library->playlist);
+    for (int i = 0; i < library->columnCount(QModelIndex()); i++) {
+        ui->libraryView->setColumnWidth(i, 200);
+    }
 
     menu = new MenuBar();
     for (auto &_menu : menu->getAllMenus()) {
@@ -100,6 +106,10 @@ PlayerWindow::PlayerWindow(QWidget *parent)
 
     ui->durationWidget->setLayout(new QVBoxLayout());
     ui->durationWidget->layout()->addWidget(durationControls);
+
+    rightClickMenu = new RightClickMenu(this);
+    connect(ui->libraryView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customMenuRequested(QPoint)));
+    connect(rightClickMenu, SIGNAL(playThisNow()), this, SLOT(playNow()));
 }
 
 PlayerWindow::~PlayerWindow()
@@ -121,7 +131,6 @@ void PlayerWindow::previousSong()
 {
     // TODO: Make the time to go to the previous song adjustable
     // TODO: Remove this
-    qDebug() << lastPreviousClick.msecsTo(QTime::currentTime());
     if (player->position() < 10000 || lastPreviousClick.msecsTo(QTime::currentTime()) < 1000) {
         player->playlist()->previous();
     }
@@ -158,4 +167,15 @@ void PlayerWindow::metaDataChanged()
     setWindowTitle(QString("%1 - %2")
                        .arg(player->metaData(QMediaMetaData::ContributingArtist).toString())
                        .arg(player->metaData(QMediaMetaData::Title).toString()));
+}
+
+void PlayerWindow::playNow()
+{
+    player->setMedia(library->get(ui->libraryView->currentIndex().row()));
+    emit player->play();
+}
+
+void PlayerWindow::customMenuRequested(QPoint pos)
+{
+    emit rightClickMenu->display(ui->libraryView->viewport()->mapToGlobal(pos));
 }
