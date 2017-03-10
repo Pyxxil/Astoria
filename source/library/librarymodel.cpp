@@ -2,7 +2,6 @@
 
 #include <QFileDialog>
 #include <QMediaPlayer>
-#include <QAudioDeviceInfo>
 
 #include "includes/library/musicscanner.hpp"
 
@@ -10,20 +9,33 @@ LibraryModel::LibraryModel()
     : columns(5), rows(0)
 {
     playlist = new QMediaPlaylist(this);
-    playlist->addMedia(QList<QMediaContent>(
-        // TODO: Remove the below when everything is loaded later.
-#ifdef Q_OS_LINUX
-    {
-        QUrl::fromLocalFile("/home/pyxxil/Downloads/01 - Welcome to the Black Parade.mp3"),
-        QUrl::fromLocalFile("/home/pyxxil/Downloads/01. The Writer (Starsmith Edit).mp3"),
-        QUrl::fromLocalFile("/home/pyxxil/Downloads/02 - Heaven Help Us.mp3"),
-        QUrl::fromLocalFile("/home/pyxxil/Downloads/02. The Writer (Album Version).mp3"),
-        QUrl::fromLocalFile("/home/pyxxil/Downloads/03. The Writer (Instrumental).mp3"),
-    }
+
+    supportedFormats = {
+        "*.mp3",
+        "*.m4a",
+        "*.mp4",
+        "*.snd",
+        "*.au",
+        "*.aac",
+        "*.adts",
+        "*.aif",
+        "*.aiff",
+        "*.aifc",
+        "*.caf",
+        "*.sd2",
+        "*.wav",
+#if defined(Q_OS_LINUX)
+    "*.wma",
+    "*.flv",
+    "*.ogg",
+    "*.flac"
 #endif
-    ));
-    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
-    supportedFormats = info.supportedCodecs();
+    };
+}
+
+LibraryModel::~LibraryModel()
+{
+    delete playlist;
 }
 
 bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -56,22 +68,17 @@ Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
     if (index.isValid() && role == Qt::DisplayRole) {
+        if (library.length() == 0) {
+            return QVariant();
+        }
+        const QMap<QString, QString> &metadata = library.at(index.row()).metaData();
         switch (index.column()) {
         case 0:
-            if (library.keys().count() > 0) {
-                return library.values().at(index.row())["Artist"];
-            }
-            return QVariant();
+            return metadata["Artist"];
         case 1:
-            if (library.values().count() > 0) {
-                return library.values().at(index.row())["Album"];
-            }
-            return QVariant();
+            return metadata["Album"];
         case 2:
-            if (library.values().count() > 0) {
-                return library.values().at(index.row())["Title"];
-            }
-            return QVariant();
+            return metadata["Title"];
         case 3:
             return QString();
         default:
@@ -92,25 +99,34 @@ void LibraryModel::scanDirectory(QString &directory)
 {
     QMediaPlayer player;
     QDir musicDirectory(directory);
-    QFileInfoList musicFiles = musicDirectory.entryInfoList({"*.mp3"});
-    MusicScanner *scanner = new MusicScanner(&library, musicFiles);
-    scanner->start();
+    QFileInfoList musicFiles = musicDirectory.entryInfoList(supportedFormats);
+    MusicScanner *scanner = new MusicScanner(library, musicFiles);
     connect(scanner, SIGNAL(finished()), this, SLOT(updateLibrary()));
+    connect(scanner, SIGNAL(finished()), scanner, SLOT(deleteLater()));
+    scanner->start();
 }
 
 void LibraryModel::updateLibrary()
 {
-    emit libraryUpdated();
+    if (library.count() == rows) {
+        // TODO: Read below
+        // There's no point in updating the library if it's still the same number of items
+        // Then again, what if some were removed at the same time ... ? Without it, however,
+        // it segfaults, so for now it stays.
+        return;
+    }
     beginInsertRows(QModelIndex(), rows, library.count() - rows);
     insertRows(rows, library.count() - rows);
     endInsertRows();
+    emit dataChanged(QModelIndex(), QModelIndex());
     rows = library.count();
-    for (auto &song : library.keys()) {
-        playlist->addMedia(song);
+    for (const auto &song : library) {
+        playlist->addMedia(QUrl::fromLocalFile(song.filePath));
     }
+    emit libraryUpdated();
 }
 
-const QUrl &LibraryModel::get(int row) const
+const QUrl LibraryModel::get(int row) const
 {
-    return library.keys().at(row);
+    return QUrl::fromLocalFile(library.at(row).filePath);
 }

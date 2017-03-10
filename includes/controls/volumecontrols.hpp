@@ -2,9 +2,10 @@
 #define VOLUMECONTROLS_HPP
 
 #include <QWidget>
+#include <QIcon>
 
 class QAbstractButton;
-class QAbstractSlider;
+class SensibleSlider;
 class QBoxLayout;
 
 class VolumeControls: public QWidget
@@ -16,7 +17,8 @@ signals:
     void mute(bool);
 
 public:
-    explicit VolumeControls(QWidget *parent = 0);
+    explicit VolumeControls(QWidget *parent = 0, int volume = 100, bool mute = false,
+                            int minWidth = 16777215, int maxWidth = 16777215);
 
     int getVolume() const;
     bool isMuted() const;
@@ -30,7 +32,14 @@ public slots:
 private:
     bool mutedStatus;
     QAbstractButton *muteButton;
-    QAbstractSlider *volumeSlider;
+    SensibleSlider *volumeSlider;
+
+    QIcon muteIcon;
+    QIcon lowVolumeIcon;
+    QIcon mediumVolumeIcon;
+    QIcon highVolumeIcon;
+
+    void changeVolumeIcon();
 
 private slots:
     void muteButtonClicked();

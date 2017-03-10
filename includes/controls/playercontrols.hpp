@@ -3,6 +3,7 @@
 
 #include <QMediaPlayer>
 #include <QWidget>
+#include <QIcon>
 
 class QLabel;
 class QBoxLayout;
@@ -20,7 +21,7 @@ signals:
     void previous();
 
 public:
-    explicit PlayerControls(QWidget *parent = 0);
+    explicit PlayerControls(QWidget *parent = 0, QMediaPlayer::State state = QMediaPlayer::StoppedState);
     QBoxLayout *layout;
 
 public slots:
@@ -31,6 +32,14 @@ private:
     QAbstractButton *playPauseButton;
     QAbstractButton *nextButton;
     QAbstractButton *previousButton;
+    QAbstractButton *repeatButton;
+    QAbstractButton *shuffleButton;
+
+    QIcon playPauseIcon;
+    QIcon nextIcon;
+    QIcon previousIcon;
+    QIcon shuffleIcon;
+    QIcon repeatIcon;
 
 private slots:
     void playPauseButtonClicked();

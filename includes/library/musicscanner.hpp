@@ -1,24 +1,25 @@
-#ifndef MUSICPLAYER_MUSICSCANNER_H
-#define MUSICPLAYER_MUSICSCANNER_H
+#ifndef MUSICSCANNER_H
+#define MUSICSCANNER_H
 
-#include <QThread>
 #include <QFileInfoList>
+#include <QThread>
+#include <QList>
 
-class MusicScanner : public QThread
+#include "includes/library/song.hpp"
+
+class MusicScanner: public QThread
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
-    MusicScanner(QMap<QUrl, QMap<QString, QString>> *, QFileInfoList &);
+    MusicScanner(QList<Song> &, QFileInfoList &);
 
-    void run();
-    void setFiles(QFileInfoList &);
+    void run() Q_DECL_OVERRIDE;
 
 private:
-    QMap<QUrl, QMap<QString, QString>> *library;
+    QList<Song> &library;
     QFileInfoList files;
-
 };
 
 
-#endif //MUSICPLAYER_MUSICSCANNER_H
+#endif //MUSICSCANNER_H

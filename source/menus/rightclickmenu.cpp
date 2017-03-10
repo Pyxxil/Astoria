@@ -8,6 +8,11 @@ RightClickMenu::RightClickMenu(QWidget *parent)
     addAction(playAction);
 }
 
+RightClickMenu::~RightClickMenu()
+{
+    delete playAction;
+}
+
 void RightClickMenu::display(QPoint point)
 {
     popup(point);

@@ -11,6 +11,12 @@ MenuBar::MenuBar()
     connectActions();
 }
 
+MenuBar::~MenuBar()
+{
+    delete fileMenu;
+    delete controlsMenu;
+}
+
 QList<QMenu *> &MenuBar::getAllMenus()
 {
     return menus;
@@ -62,17 +68,18 @@ void MenuBar::playOrPause()
 {
     if (parent->playerState() == QMediaPlayer::PlayingState) {
         emit pause();
-    } else {
+    }
+    else {
         emit play();
     }
-    playPauseChangeText();
 }
 
-void MenuBar::playPauseChangeText()
+void MenuBar::playPauseChangeText(QMediaPlayer::State state)
 {
-    if (parent->playerState() == QMediaPlayer::PlayingState) {
+    if (state == QMediaPlayer::PlayingState) {
         playPause->setText("Pause");
-    } else {
+    }
+    else {
         playPause->setText("Play");
     }
 }

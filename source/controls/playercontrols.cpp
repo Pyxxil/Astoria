@@ -2,31 +2,69 @@
 
 #include <QToolButton>
 #include <QBoxLayout>
-#include <QStyle>
 
-PlayerControls::PlayerControls(QWidget *parent)
-    : QWidget(parent), playerState(QMediaPlayer::StoppedState)
+static constexpr int iconWidth = 25;
+static constexpr int iconHeight = 25;
+
+PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
+    : QWidget(parent)
+      , playerState(state)
 {
+    setStyleSheet("QToolButton { border: none; }");
+
+    playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
+    playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
+
+    shuffleIcon.addPixmap(QPixmap(":/icons/ShuffleOff.png"), QIcon::Normal, QIcon::Off);
+    shuffleIcon.addPixmap(QPixmap(":/icons/ShuffleOn.png"), QIcon::Normal, QIcon::On);
+
+    repeatIcon.addPixmap(QPixmap(":/icons/RepeatOff.png"), QIcon::Normal, QIcon::Off);
+    repeatIcon.addPixmap(QPixmap(":/icons/RepeatOn.png"), QIcon::Normal, QIcon::On);
+
+    nextIcon.addPixmap(QPixmap(":/icons/Next.png"), QIcon::Normal, QIcon::On);
+    nextIcon.addPixmap(QPixmap(":/icons/NextActive.png"), QIcon::Active, QIcon::On);
+
+    previousIcon.addPixmap(QPixmap(":/icons/Previous.png"), QIcon::Normal, QIcon::On);
+    previousIcon.addPixmap(QPixmap(":/icons/PreviousActive.png"), QIcon::Active, QIcon::On);
+
     playPauseButton = new QToolButton(this);
-    playPauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    playPauseButton->setIcon(playPauseIcon);
+    playPauseButton->setIconSize(QSize(static_cast<int>(iconWidth  * 1.5),
+                                       static_cast<int>(iconHeight * 1.5)));
+    playPauseButton->setCheckable(true);
+    playPauseButton->setChecked(true);
     playPauseButton->setShortcut(Qt::Key_Space);
     connect(playPauseButton, SIGNAL(clicked()),
             this, SLOT(playPauseButtonClicked()));
 
     nextButton = new QToolButton(this);
-    nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+    nextButton->setIcon(nextIcon);
+    nextButton->setIconSize(QSize(iconWidth, iconHeight));
     connect(nextButton, SIGNAL(clicked()),
             this, SLOT(nextButtonClicked()));
 
     previousButton = new QToolButton(this);
-    previousButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
+    previousButton->setIcon(previousIcon);
+    previousButton->setIconSize(QSize(iconWidth, iconHeight));
     connect(previousButton, SIGNAL(clicked()),
             this, SLOT(previousButtonClicked()));
 
+    shuffleButton = new QToolButton(this);
+    shuffleButton->setIcon(shuffleIcon);
+    shuffleButton->setIconSize(QSize(iconWidth, iconHeight));
+    shuffleButton->setCheckable(true);
+
+    repeatButton = new QToolButton(this);
+    repeatButton->setIcon(repeatIcon);
+    repeatButton->setIconSize(QSize(iconWidth, iconHeight));
+    repeatButton->setCheckable(true);
+
     layout = new QHBoxLayout(this);
+    layout->addWidget(shuffleButton);
     layout->addWidget(previousButton);
     layout->addWidget(playPauseButton);
     layout->addWidget(nextButton);
+    layout->addWidget(repeatButton);
 
     setLayout(layout);
 }
@@ -37,13 +75,13 @@ void PlayerControls::setState(QMediaPlayer::State state)
         playerState = state;
 
         switch (state) {
-            case QMediaPlayer::PlayingState:
-                playPauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-                break;
-            case QMediaPlayer::PausedState:
-            case QMediaPlayer::StoppedState:
-                playPauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-                break;
+        case QMediaPlayer::PlayingState:
+            playPauseButton->setChecked(false);
+            break;
+        case QMediaPlayer::PausedState:
+        case QMediaPlayer::StoppedState:
+            playPauseButton->setChecked(true);
+            break;
         }
     }
 }
@@ -51,13 +89,13 @@ void PlayerControls::setState(QMediaPlayer::State state)
 void PlayerControls::playPauseButtonClicked()
 {
     switch (playerState) {
-        case QMediaPlayer::StoppedState:
-        case QMediaPlayer::PausedState:
-            emit play();
-            break;
-        case QMediaPlayer::PlayingState:
-            emit pause();
-            break;
+    case QMediaPlayer::StoppedState:
+    case QMediaPlayer::PausedState:
+        emit play();
+        break;
+    case QMediaPlayer::PlayingState:
+        emit pause();
+        break;
     }
 }
 

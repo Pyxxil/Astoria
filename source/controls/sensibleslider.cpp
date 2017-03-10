@@ -1,22 +1,32 @@
-#include "includes/controls/durationslider.hpp"
+#include "includes/controls/sensibleslider.hpp"
 
 #include <QStyleOptionSlider>
 #include <QMouseEvent>
 #include <QDebug>
 
-DurationSlider::DurationSlider(QWidget *parent, Qt::Orientation orientation)
+/**
+ * A sensible version of QT's QSlider class that actually sets the value
+ * when it's clicked (it should also take into account the handle).
+ * @param parent The parent of this widget.
+ * @param orientation The orientation of the widget.
+ */
+SensibleSlider::SensibleSlider(QWidget *parent, Qt::Orientation orientation)
     : QSlider(orientation, parent)
 {
 
 }
 
-void DurationSlider::mousePressEvent(QMouseEvent *event)
+/**
+ *
+ * @param event
+ */
+void SensibleSlider::mousePressEvent(QMouseEvent *event)
 {
     QStyleOptionSlider opt;
     initStyleOption(&opt);
-    QRect sr = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
+    QRect handle = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle, this);
 
-    if (event->button() == Qt::LeftButton && !sr.contains(event->pos()))
+    if (event->button() == Qt::LeftButton && !handle.contains(event->pos()))
     {
         int newVal;
         if (orientation() == Qt::Vertical) {

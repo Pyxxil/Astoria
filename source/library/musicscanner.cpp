@@ -1,37 +1,27 @@
 #include "includes/library/musicscanner.hpp"
 
-#include <QMediaPlayer>
-#include <QEventLoop>
-#include <QMediaMetaData>
-
-MusicScanner::MusicScanner(QMap<QUrl, QMap<QString, QString>> *lib, QFileInfoList &musicFiles)
-    : library(lib)
-      , files(musicFiles)
+MusicScanner::MusicScanner(QList<Song> &lib, QFileInfoList &musicFiles)
+    : library(lib), files(musicFiles)
 {
-
 }
 
 void MusicScanner::run()
 {
-    QMediaPlayer player;
-    QEventLoop loop;
     for (const auto &file : files) {
-        QUrl filePath = QUrl::fromLocalFile(file.absoluteFilePath());
-        if (library->count(filePath) == 0) {
-            player.setMedia(filePath);
-            loop.connect(&player, SIGNAL(metaDataChanged()), SLOT(quit()));
-            loop.exec();
-            library->insert(filePath, {
-                {"Author", player.metaData(QMediaMetaData::Author).toString()},
-                {"Title", player.metaData(QMediaMetaData::Title).toString()},
-                {"Artist", player.metaData(QMediaMetaData::ContributingArtist).toString()},
-                {"Album", player.metaData(QMediaMetaData::AlbumTitle).toString()},
-            });
+        bool isAlreadyInLibrary = false;
+        // TODO: Think about if this is the right choice. With a large library,
+        // this could take a lot longer than just adding the song.. But otherwise,
+        // we're adding the same song multiple times. Probably best to change the
+        // underlying structure to a QMap<QUrl|QString, Song>.
+        for (const auto &song : library) {
+            if (song.filePath == file.absoluteFilePath()) {
+                isAlreadyInLibrary = true;
+                break;
+            }
+        }
+
+        if (!isAlreadyInLibrary) {
+            library.append(Song(file));
         }
     }
-}
-
-void MusicScanner::setFiles(QFileInfoList &musicFiles)
-{
-    files = musicFiles;
 }

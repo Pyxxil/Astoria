@@ -2,13 +2,14 @@
 #define MENUBAR_HPP
 
 #include <QList>
+#include <QMediaPlayer>
 
 class QMenu;
 class QAction;
 class QWidget;
 class PlayerWindow;
 
-class MenuBar : public QObject
+class MenuBar: public QObject
 {
 Q_OBJECT
 
@@ -21,12 +22,13 @@ signals:
 
 public:
     MenuBar();
+    ~MenuBar();
 
     QList<QMenu *> &getAllMenus();
 
 private slots:
     void playOrPause();
-    void playPauseChangeText();
+    void playPauseChangeText(QMediaPlayer::State);
     void playPreviousSong();
     void playNextSong();
     void libraryScanDirectory();
@@ -51,4 +53,4 @@ private:
 };
 
 
-#endif //MUSICPLAYER_MENUBAR_HPP
+#endif //MENUBAR_HPP

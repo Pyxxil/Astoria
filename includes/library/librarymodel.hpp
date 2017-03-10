@@ -1,8 +1,31 @@
-#ifndef MUSICPLAYER_LIBRARY_HPP
-#define MUSICPLAYER_LIBRARY_HPP
+#ifndef LIBRARY_HPP
+#define LIBRARY_HPP
 
 #include <QAbstractTableModel>
 #include <QMediaPlaylist>
+#include <QThread>
+
+#include "includes/library/song.hpp"
+
+/**
+ * TODO: Change most of this.
+ *
+ *  - There should be a playlist class that holds information on the current playlist.
+ *  - The scanner should provide a list containing new elements (While checking the current
+ *    library for any duplicates).
+ *    - This should help in adding the new elements, and only the new elements, to the
+ *      playlist.
+ *  - The library should only be used as a model, not a controller of logic.
+ *
+ * FEATURES:
+ *  - MenuBar
+ *    - Choice of highlighting currently playing media (or some icon).
+ *    - Choice of view follows playing media.
+ *  - Right Click Menu
+ *  - Both
+ *    - Remove Item from library
+ *
+ */
 
 class LibraryModel: public QAbstractTableModel
 {
@@ -13,6 +36,7 @@ signals:
 
 public:
     LibraryModel();
+    ~LibraryModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
@@ -28,7 +52,7 @@ public:
 
     void scanDirectory(QString &directory);
 
-    const QUrl &get(int row) const;
+    const QUrl get(int row) const;
 
 public slots:
     void openDirectory();
@@ -39,8 +63,8 @@ private:
     int rows;
     QList<QString> supportedFormats;
 
-    QMap<QUrl, QMap<QString, QString>> library;
+    QList<Song> library;
 };
 
 
-#endif //MUSICPLAYER_LIBRARY_HPP
+#endif //LIBRARY_HPP

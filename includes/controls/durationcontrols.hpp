@@ -1,12 +1,12 @@
-#ifndef MUSICPLAYER_DURATIONCONTROLS_HPP
-#define MUSICPLAYER_DURATIONCONTROLS_HPP
+#ifndef DURATIONCONTROLS_HPP
+#define DURATIONCONTROLS_HPP
 
 #include <QWidget>
 
 class QLabel;
-class DurationSlider;
+class SensibleSlider;
 
-class DurationControls : public QWidget
+class DurationControls: public QWidget
 {
 Q_OBJECT
 
@@ -14,9 +14,9 @@ signals:
     void seek(int);
 
 public:
-    DurationControls(QWidget *parent = 0);
+    DurationControls(QWidget *parent = 0, int minWidth = 16777215, int maxWidth = 16777215);
 
-    DurationSlider *durationSlider;
+    SensibleSlider *durationSlider;
     QLabel *currentTime;
     QLabel *totalDuration;
     qint64 duration;
@@ -27,4 +27,4 @@ public slots:
     void durationSliderValueChanged(int);
 };
 
-#endif //MUSICPLAYER_DURATIONCONTROLS_HPP
+#endif //DURATIONCONTROLS_HPP

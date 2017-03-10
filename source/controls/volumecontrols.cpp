@@ -1,40 +1,63 @@
 #include "includes/controls/volumecontrols.hpp"
 
 #include <QToolButton>
-#include <QSlider>
 #include <QBoxLayout>
-#include <QStyle>
 #include <QAudio>
 
-VolumeControls::VolumeControls(QWidget *parent)
-    : QWidget(parent), mutedStatus(false)
+#include "includes/controls/sensibleslider.hpp"
+
+VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWidth, int maxWidth)
+    : QWidget(parent)
+      , mutedStatus(mute)
+      , muteIcon(QPixmap(":/icons/Mute.png"))
+      , lowVolumeIcon(QPixmap(":/icons/VolumeLow.png"))
+      , mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png"))
+      , highVolumeIcon(QPixmap(":/icons/VolumeHigh.png"))
 {
     muteButton = new QToolButton(this);
-    muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
     muteButton->setStyleSheet("border: none;");
+    muteButton->setIconSize(QSize(25, 25));
     connect(muteButton, SIGNAL(clicked()),
             this, SLOT(muteButtonClicked()));
 
-    volumeSlider = new QSlider(Qt::Horizontal, this);
+    volumeSlider = new SensibleSlider(this);
     volumeSlider->setRange(0, 100);
     volumeSlider->setTracking(true);
+    setStyleSheet("QSlider::Handle { image: none; }");
     connect(volumeSlider, SIGNAL(valueChanged(int)),
             this, SLOT(volumeSliderValueChanged()));
+
+    setMinimumWidth(minWidth);
+    setMaximumWidth(maxWidth);
 
     layout = new QHBoxLayout(this);
     layout->setMargin(0);
     layout->addWidget(muteButton);
     layout->addWidget(volumeSlider);
     setLayout(layout);
+
+    setVolume(volume);
 }
 
 int VolumeControls::getVolume() const
 {
     qreal linearVolume = QAudio::convertVolume(
-        volumeSlider->value() / qreal(100), QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale
+        volumeSlider->value() / qreal(100),
+        QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale
     );
 
     return qRound(linearVolume * 100);
+}
+
+void VolumeControls::changeVolumeIcon()
+{
+    if (volumeSlider->value() > 70) {
+        muteButton->setIcon(highVolumeIcon);
+    } else if (volumeSlider->value() > 30) {
+        muteButton->setIcon(mediumVolumeIcon);
+    } else {
+        muteButton->setIcon(lowVolumeIcon);
+    }
 }
 
 void VolumeControls::setVolume(int volume)
@@ -51,6 +74,10 @@ void VolumeControls::setVolume(int volume)
     else if (isMuted()) {
         emit mute(false);
     }
+
+    if (!isMuted()) {
+        changeVolumeIcon();
+    }
 }
 
 void VolumeControls::volumeSliderValueChanged()
@@ -62,10 +89,7 @@ void VolumeControls::setMute(bool mute)
 {
     if (mute != mutedStatus) {
         mutedStatus = mute;
-        muteButton->setIcon(
-            style()->standardIcon(
-                mute ? QStyle::SP_MediaVolumeMuted :
-                    QStyle::SP_MediaVolume));
+        muteButton->setIcon(muteIcon);
     }
 }
 
