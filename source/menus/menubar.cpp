@@ -4,7 +4,8 @@
 
 #include "includes/playerwindow.hpp"
 
-MenuBar::MenuBar()
+MenuBar::MenuBar(PlayerWindow *parent)
+    : parent(parent)
 {
     setUpMenus();
     setUpActions();
@@ -66,6 +67,7 @@ void MenuBar::connectActions()
 
 void MenuBar::playOrPause()
 {
+    // TODO: Change this, it's a bad way to do what I want.
     if (parent->playerState() == QMediaPlayer::PlayingState) {
         emit pause();
     }

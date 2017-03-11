@@ -4,20 +4,25 @@
 #include <QMediaMetaData>
 #include <QHBoxLayout>
 #include <QLabel>
-
-#include "includes/controls/playercontrols.hpp"
-#include "includes/controls/volumecontrols.hpp"
-#include "includes/controls/durationcontrols.hpp"
-#include "includes/library/librarymodel.hpp"
-#include "includes/menus/menubar.hpp"
-#include "includes/menus/rightclickmenu.hpp"
-#include "includes/trackinformation.hpp"
+#include <QTableView>
+#include <QMimeDatabase>
 
 #include <mpegfile.h>
 #include <attachedpictureframe.h>
 #include <id3v2tag.h>
 #include <id3v2extendedheader.h>
-#include <id3v2frame.h>
+#include <mp4tag.h>
+#include <mp4coverart.h>
+#include <mp4file.h>
+
+#include "includes/controls/durationcontrols.hpp"
+#include "includes/controls/playercontrols.hpp"
+#include "includes/controls/volumecontrols.hpp"
+#include "includes/library/librarymodel.hpp"
+#include "includes/menus/rightclickmenu.hpp"
+#include "includes/trackinformation.hpp"
+#include "includes/menus/menubar.hpp"
+
 
 /**
  * TODO: Possible features
@@ -37,6 +42,9 @@
  *  - Fix up UI stuff
  *  - Add other tags to columns in the library view
  *  - Fix the Playlist problems (playing next, previous crashes, change playlist set-up)
+ *  - Set up a namespace that everything can connect to
+ *      - Audio stuff
+ *      - UI stuff
  */
 
 PlayerWindow::PlayerWindow(QWidget *parent)
@@ -44,8 +52,13 @@ PlayerWindow::PlayerWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    QFile styleSheet(":/StyleSheet.qss");
+    styleSheet.open(QFile::ReadOnly | QFile::Text);
+    QTextStream styles(&styleSheet);
+    qApp->setStyleSheet(styles.readAll());
+
     //setWindowTitle(Project);
-    setStyleSheet("background-color: #333333;");
+    //setStyleSheet("background-color: #333333; font-size: 13pt;");
 
     player = new QMediaPlayer(this);
 
@@ -56,17 +69,16 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     durationControls = new DurationControls(this, 200);
 
     library = new LibraryModel();
+    libraryView = new QTableView;
 
-    ui->libraryView->setModel(library);
-    ui->libraryView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     player->setPlaylist(library->playlist);
 
-    menu = new MenuBar();
-    for (auto &_menu : menu->getAllMenus()) {
+    menu = new MenuBar(this);
+    for (const auto &_menu : menu->getAllMenus()) {
         ui->menuBar->addMenu(_menu);
     }
 
-    information = new TrackInformation();
+    information = new TrackInformation(this, 200, 200);
 
     rightClickMenu = new RightClickMenu(this);
 
@@ -77,8 +89,8 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     coverArtLabel->setMaximumSize(200, 200);
     coverArtLabel->setContentsMargins(0, 0, 0, 0);
 
-    setUpConnections();
-    setUpLayouts();
+    setupConnections();
+    setupUI();
 }
 
 PlayerWindow::~PlayerWindow()
@@ -130,18 +142,7 @@ void PlayerWindow::metaDataChanged()
     emit informationChanged(TStringToQString(song.tag()->artist()),
                             TStringToQString(song.tag()->title()));
 
-    TagLib::MPEG::File file(song.file()->name());
-    TagLib::ID3v2::Tag *m_tag = file.ID3v2Tag(true);
-    TagLib::ID3v2::FrameList frameList = m_tag->frameList("APIC");
-    if(frameList.isEmpty()) {
-        qDebug() << "Couldn't find an image for that file.";
-        return;
-    }
-
-    TagLib::ID3v2::AttachedPictureFrame *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-    image.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-    coverArtLabel->setPixmap(QPixmap::fromImage(image));
+    loadCoverArt(song);
 }
 
 void PlayerWindow::play()
@@ -154,15 +155,15 @@ void PlayerWindow::play()
 void PlayerWindow::playNow()
 {
     // TODO: Fix this.
-    player->playlist()->insertMedia(0, library->get(ui->libraryView->currentIndex().row()));
+    player->playlist()->insertMedia(0, library->get(libraryView->currentIndex().row()));
     player->playlist()->setCurrentIndex(0);
     emit player->play();
 }
 
 void PlayerWindow::customMenuRequested(QPoint pos)
 {
-    if (ui->libraryView->indexAt(pos).isValid()) {
-        emit rightClickMenu->display(ui->libraryView->viewport()->mapToGlobal(pos));
+    if (libraryView->indexAt(pos).isValid()) {
+        emit rightClickMenu->display(libraryView->viewport()->mapToGlobal(pos));
     }
 }
 
@@ -171,7 +172,7 @@ void PlayerWindow::updatePlaylist()
     // TODO: Figure out what to do here
 }
 
-void PlayerWindow::setUpConnections()
+void PlayerWindow::setupConnections()
 {
     connect(playerControls, SIGNAL(play()),
             this, SLOT(play()));
@@ -219,16 +220,19 @@ void PlayerWindow::setUpConnections()
     connect(library, SIGNAL(libraryUpdated()),
             this, SLOT(updatePlaylist()));
 
-    connect(ui->libraryView, SIGNAL(customContextMenuRequested(QPoint)),
+    connect(libraryView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(customMenuRequested(QPoint)));
     connect(rightClickMenu, SIGNAL(playThisNow()),
             this, SLOT(playNow()));
 
     connect(this, SIGNAL(informationChanged(QString, QString)),
             information, SLOT(updateLabels(QString, QString)));
+
+    connect(libraryView->horizontalHeader(), SIGNAL(sectionClicked(int)),
+            library, SLOT(sortByColumn(int)));
 }
 
-void PlayerWindow::setUpLayouts()
+void PlayerWindow::setupUI()
 {
     QHBoxLayout *centralPlayerControlsLayout = new QHBoxLayout;
     centralPlayerControlsLayout->addStretch(1);
@@ -251,17 +255,19 @@ void PlayerWindow::setUpLayouts()
 
     QWidget *controlsWidget = new QWidget(this);
     controlsWidget->setLayout(controlLayout);
-    controlsWidget->setStyleSheet("background: #ECF0F1;");
+    //controlsWidget->setStyleSheet("background-color: #ECF0F1; color: 333333;");
 
     QVBoxLayout *coverArtArea = new QVBoxLayout;
     coverArtArea->addStretch(1);
     coverArtArea->addSpacing(1);
     coverArtArea->addWidget(coverArtLabel);
+    coverArtLabel->setContentsMargins(0, 0, 0, 0);
+    coverArtLabel->setMaximumWidth(information->maximumWidth());
     coverArtArea->setContentsMargins(0, 0, 0, 0);
 
     QHBoxLayout *uiLayout = new QHBoxLayout;
     uiLayout->addLayout(coverArtArea);
-    uiLayout->addWidget(ui->libraryView, 1);
+    uiLayout->addWidget(libraryView, 1);
     uiLayout->setContentsMargins(0, 0, 0, 0);
 
     QVBoxLayout *endLayout = new QVBoxLayout;
@@ -269,7 +275,60 @@ void PlayerWindow::setUpLayouts()
     endLayout->addWidget(controlsWidget);
     endLayout->setContentsMargins(0, 0, 0, 0);
 
-    ui->libraryView->setStyleSheet("color: #ECF0F1; selection-background-color: #666666;");
+    //libraryView->setStyleSheet("QTableView { color: #ECF0F1; selection-background-color: #666666; }\n"
+    //                               "QHeaderView::section { background-color: #333333; color: #ECF0F1; border: none; }");
+    libraryView->setModel(library);
+    libraryView->horizontalHeader()->setFrameShape(QFrame::NoFrame);
+    libraryView->setSortingEnabled(true);
+    libraryView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    libraryView->horizontalHeader()->setHighlightSections(false);
+    libraryView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    libraryView->horizontalHeader()->setFrameRect(QRect());
+    libraryView->verticalHeader()->setVisible(false);
+    libraryView->setContextMenuPolicy(Qt::CustomContextMenu);
+    libraryView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    libraryView->setShowGrid(false);
+    libraryView->setFrameShape(QFrame::NoFrame);
+    libraryView->horizontalHeader()->setSectionsClickable(true);
 
     ui->centralWidget->setLayout(endLayout);
+}
+
+void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
+{
+    QMimeDatabase db;
+    QMimeType codec = db.mimeTypeForFile(song.file()->name());
+
+    if (codec.name() == "audio/mp4") {
+        TagLib::MP4::File mp4(song.file()->name());
+        TagLib::MP4::Tag* tag = mp4.tag();
+        TagLib::MP4::ItemListMap itemsListMap = tag->itemListMap();
+        TagLib::MP4::Item coverItem = itemsListMap["covr"];
+        TagLib::MP4::CoverArtList coverArtList = coverItem.toCoverArtList();
+
+        if (!coverArtList.isEmpty()) {
+            TagLib::MP4::CoverArt coverArt = coverArtList.front();
+            image.loadFromData((const uchar *)
+                                   coverArt.data().data(),coverArt.data().size());
+        } else {
+            image.load(":/CoverArtUnavailable.png");
+        }
+    } else if (codec.name() == "audio/mpeg"){
+        TagLib::MPEG::File file(song.file()->name());
+        TagLib::ID3v2::Tag *m_tag = file.ID3v2Tag();
+        TagLib::ID3v2::FrameList frameList = m_tag->frameList("APIC");
+
+        if (!frameList.isEmpty()) {
+            TagLib::ID3v2::AttachedPictureFrame
+                *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+            image.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
+        } else {
+            image.load(":/CoverArtUnavailable.png");
+        }
+    } else {
+        image.load(":/CoverArtUnavailable.png");
+    }
+
+    coverArtLabel->setPixmap(QPixmap::fromImage(image));
 }

@@ -19,38 +19,39 @@ SET ( CMAKE_AUTOUIC ON )
 SET ( CMAKE_AUTORCC ON )
 
 SET ( SOURCE_FILES
-	  source/main.cpp
-	  source/controls/playercontrols.cpp
-	  source/playerwindow.cpp
-	  source/controls/volumecontrols.cpp
-	  source/menus/menubar.cpp
 	  source/controls/durationcontrols.cpp
+      source/controls/sensibleslider.cpp
+	  source/controls/playercontrols.cpp
+      source/controls/volumecontrols.cpp
 	  source/library/librarymodel.cpp
 	  source/library/musicscanner.cpp
 	  source/menus/rightclickmenu.cpp
-	  source/controls/sensibleslider.cpp
-	  source/library/song.cpp
 	  source/library/playlist.cpp
 	  source/trackinformation.cpp
+	  source/menus/menubar.cpp
+	  source/playerwindow.cpp
+	  source/library/song.cpp
+	  source/main.cpp
 	  )
 
 SET ( INCLUDE_FILES
-      includes/menus/menubar.hpp
+	  includes/controls/durationcontrols.hpp
+	  includes/controls/sensibleslider.hpp
       includes/controls/volumecontrols.hpp
-      includes/playerwindow.hpp
-      includes/controls/playercontrols.hpp
-      includes/controls/durationcontrols.hpp
+	  includes/controls/playercontrols.hpp
       includes/library/librarymodel.hpp
       includes/menus/rightclickmenu.hpp
       includes/library/musicscanner.hpp
-	  includes/controls/sensibleslider.hpp
-	  includes/library/song.hpp
 	  includes/library/playlist.hpp
-      includes/trackinformation.hpp
+	  includes/trackinformation.hpp
+	  includes/menus/menubar.hpp
+      includes/playerwindow.hpp
+	  includes/library/song.hpp
       )
 
 SET ( RCC_TARGETS
-	  icons.qrc
+	  Icons.qrc
+	  Styles.qrc
 	  )
 
 MESSAGE ( "SOURCE DIRECTORY: ${CMAKE_SOURCE_DIR}" )

@@ -10,7 +10,7 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
     : QWidget(parent)
       , playerState(state)
 {
-    setStyleSheet("QToolButton { border: none; }");
+    //setStyleSheet("QToolButton { border: none; }");
 
     playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
     playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
@@ -59,14 +59,12 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
     repeatButton->setIconSize(QSize(iconWidth, iconHeight));
     repeatButton->setCheckable(true);
 
-    layout = new QHBoxLayout(this);
-    layout->addWidget(shuffleButton);
-    layout->addWidget(previousButton);
-    layout->addWidget(playPauseButton);
-    layout->addWidget(nextButton);
-    layout->addWidget(repeatButton);
-
-    setLayout(layout);
+    setLayout(new QHBoxLayout);
+    layout()->addWidget(shuffleButton);
+    layout()->addWidget(previousButton);
+    layout()->addWidget(playPauseButton);
+    layout()->addWidget(nextButton);
+    layout()->addWidget(repeatButton);
 }
 
 void PlayerControls::setState(QMediaPlayer::State state)

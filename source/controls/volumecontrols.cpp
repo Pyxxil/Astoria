@@ -15,7 +15,7 @@ VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWi
       , highVolumeIcon(QPixmap(":/icons/VolumeHigh.png"))
 {
     muteButton = new QToolButton(this);
-    muteButton->setStyleSheet("border: none;");
+    //muteButton->setStyleSheet("border: none;");
     muteButton->setIconSize(QSize(25, 25));
     connect(muteButton, SIGNAL(clicked()),
             this, SLOT(muteButtonClicked()));
@@ -23,7 +23,7 @@ VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWi
     volumeSlider = new SensibleSlider(this);
     volumeSlider->setRange(0, 100);
     volumeSlider->setTracking(true);
-    setStyleSheet("QSlider::Handle { image: none; }");
+    //setStyleSheet("QSlider::Handle { image: none; }");
     connect(volumeSlider, SIGNAL(valueChanged(int)),
             this, SLOT(volumeSliderValueChanged()));
 

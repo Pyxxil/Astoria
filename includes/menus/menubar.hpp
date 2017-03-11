@@ -9,7 +9,7 @@ class QAction;
 class QWidget;
 class PlayerWindow;
 
-class MenuBar: public QObject
+class MenuBar : public QObject
 {
 Q_OBJECT
 
@@ -21,7 +21,7 @@ signals:
     void updateLibrary();
 
 public:
-    MenuBar();
+    MenuBar(PlayerWindow *parent);
     ~MenuBar();
 
     QList<QMenu *> &getAllMenus();

@@ -1,13 +1,16 @@
 #include "includes/library/musicscanner.hpp"
 
-MusicScanner::MusicScanner(QList<Song> &lib, QFileInfoList &musicFiles)
-    : library(lib), files(musicFiles)
+MusicScanner::MusicScanner(QFileInfoList &musicFiles)
+    : files(musicFiles)
 {
 }
 
 void MusicScanner::run()
 {
+    QList<Song> songs;
+    qRegisterMetaType<QList<Song>>("QList<Song>");
     for (const auto &file : files) {
+        /*
         bool isAlreadyInLibrary = false;
         // TODO: Think about if this is the right choice. With a large library,
         // this could take a lot longer than just adding the song.. But otherwise,
@@ -19,9 +22,10 @@ void MusicScanner::run()
                 break;
             }
         }
+        */
 
-        if (!isAlreadyInLibrary) {
-            library.append(Song(file));
-        }
+        songs.append(Song(file));
     }
+
+    emit passNewItems(songs);
 }

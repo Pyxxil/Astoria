@@ -3,17 +3,16 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
-#include <QToolButton>
-#include <QTime>
-#include <QGraphicsScene>
+#include <fileref.h>
 
-class MenuBar;
-class LibraryModel;
-class RightClickMenu;
+class TrackInformation;
 class DurationControls;
+class RightClickMenu;
 class VolumeControls;
 class PlayerControls;
-class TrackInformation;
+class LibraryModel;
+class QTableView;
+class MenuBar;
 class QLabel;
 
 namespace Ui
@@ -57,11 +56,13 @@ private:
     RightClickMenu *rightClickMenu;
 
     QLabel *coverArtLabel;
+    QTableView *libraryView;
 
     QImage image;
 
-    void setUpConnections();
-    void setUpLayouts();
+    void setupConnections();
+    void setupUI();
+    void loadCoverArt(TagLib::FileRef &song);
 };
 
 #endif // PLAYERWINDOW_H

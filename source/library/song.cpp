@@ -1,10 +1,7 @@
 #include "includes/library/song.hpp"
 
-#include <iostream>
-#include <iomanip>
 #include <id3v2tag.h>
 #include <id3v2extendedheader.h>
-#include <tpropertymap.h>s
 
 Song::Song(const QFileInfo &filePath)
     : filePath(filePath.absoluteFilePath())
@@ -14,6 +11,8 @@ Song::Song(const QFileInfo &filePath)
     if (!file.isNull() && file.tag()) {
 
         // TODO: Use this stuff (Taglib example tagreader), as well as audioProperties
+        // TODO: Probably use it for editing tags and such later.
+        /*
         TagLib::PropertyMap tags = file.file()->properties();
 
         for (TagLib::PropertyMap::ConstIterator it = tags.begin(); it != tags.end(); ++it) {
@@ -21,6 +20,7 @@ Song::Song(const QFileInfo &filePath)
                 std::cout << std::left << std::setw(10) << it->first << " - " << '"' << *j << '"' << std::endl;
             }
         }
+        */
 
         metadata = {
             {"Title", TStringToQString(file.tag()->title())},
@@ -28,7 +28,12 @@ Song::Song(const QFileInfo &filePath)
             {"Album", TStringToQString(file.tag()->album())},
             {"Year", QString("%1").arg(file.tag()->year())},
             {"Track", QString("%1").arg(file.tag()->track())},
-            {"Genre", TStringToQString(file.tag()->genre())}
+            {"Genre", TStringToQString(file.tag()->genre())},
+            // TODO: Should probably change this part, what if it can't find the audio properties?
+            {"Duration", QString("%1:%2")
+                    .arg(file.audioProperties()->length() / 60, 2, 10, QChar('0'))
+                    .arg(file.audioProperties()->length() % 60, 2, 10, QChar('0'))
+            },
         };
     }
 }

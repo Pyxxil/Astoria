@@ -20,7 +20,7 @@ DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
             this, SIGNAL(seek(int)));
 
     durationSlider->setValue(0);
-    setStyleSheet("QSlider::Handle { image: none; }");
+    //setStyleSheet("QSlider::Handle { image: none; }");
 
     currentTime = new QLabel(this);
     currentTime->setText("00:00");
@@ -28,12 +28,10 @@ DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
     totalDuration = new QLabel(this);
     totalDuration->setText("00:00");
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->addWidget(currentTime);
-    layout->addWidget(durationSlider);
-    layout->addWidget(totalDuration);
-
-    setLayout(layout);
+    setLayout(new QHBoxLayout);
+    layout()->addWidget(currentTime);
+    layout()->addWidget(durationSlider);
+    layout()->addWidget(totalDuration);
 }
 
 void DurationControls::positionChanged(qint64 position)

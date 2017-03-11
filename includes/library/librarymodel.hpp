@@ -3,7 +3,6 @@
 
 #include <QAbstractTableModel>
 #include <QMediaPlaylist>
-#include <QThread>
 
 #include "includes/library/song.hpp"
 
@@ -56,7 +55,8 @@ public:
 
 public slots:
     void openDirectory();
-    void updateLibrary();
+    void updateLibrary(QList<Song>);
+    void sortByColumn(int column);
 
 private:
     int columns;
@@ -64,6 +64,13 @@ private:
     QList<QString> supportedFormats;
 
     QList<Song> library;
+
+    enum SortType {
+        AToZ,
+        ZToA,
+    };
+
+    SortType sort;
 };
 
 

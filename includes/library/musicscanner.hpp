@@ -11,13 +11,15 @@ class MusicScanner: public QThread
 {
 Q_OBJECT
 
+signals:
+    void passNewItems(QList<Song>);
+
 public:
-    MusicScanner(QList<Song> &, QFileInfoList &);
+    MusicScanner(QFileInfoList &);
 
     void run() Q_DECL_OVERRIDE;
 
 private:
-    QList<Song> &library;
     QFileInfoList files;
 };
 

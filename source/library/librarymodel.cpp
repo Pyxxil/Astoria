@@ -1,7 +1,6 @@
 #include "includes/library/librarymodel.hpp"
 
 #include <QFileDialog>
-#include <QMediaPlayer>
 
 #include "includes/library/musicscanner.hpp"
 
@@ -31,6 +30,8 @@ LibraryModel::LibraryModel()
     "*.flac"
 #endif
     };
+
+    sort = AToZ;
 }
 
 LibraryModel::~LibraryModel()
@@ -57,7 +58,25 @@ int LibraryModel::rowCount(const QModelIndex &parent) const
 
 QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    return QAbstractItemModel::headerData(section, orientation, role);
+    if (role == Qt::DisplayRole) {
+        if (orientation == Qt::Horizontal) {
+            switch (section) {
+            case 0:
+                return QString("Artist");
+            case 1:
+                return QString("Album");
+            case 2:
+                return QString("Title");
+            case 3:
+                return QString("Genre");
+            case 4:
+                return QString("Duration");
+            default:
+                return QVariant();
+            }
+        }
+    }
+    return QVariant();
 }
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const
@@ -80,7 +99,9 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
         case 2:
             return metadata["Title"];
         case 3:
-            return QString();
+            return metadata["Genre"];
+        case 4:
+            return metadata["Duration"];
         default:
             return QVariant();
         }
@@ -97,17 +118,17 @@ void LibraryModel::openDirectory()
 
 void LibraryModel::scanDirectory(QString &directory)
 {
-    QMediaPlayer player;
     QDir musicDirectory(directory);
     QFileInfoList musicFiles = musicDirectory.entryInfoList(supportedFormats);
-    MusicScanner *scanner = new MusicScanner(library, musicFiles);
-    connect(scanner, SIGNAL(finished()), this, SLOT(updateLibrary()));
+    MusicScanner *scanner = new MusicScanner(musicFiles);
+    connect(scanner, SIGNAL(passNewItems(QList<Song>)), this, SLOT(updateLibrary(QList<Song>)));
     connect(scanner, SIGNAL(finished()), scanner, SLOT(deleteLater()));
     scanner->start();
 }
 
-void LibraryModel::updateLibrary()
+void LibraryModel::updateLibrary(QList<Song> newItems)
 {
+    /*
     if (library.count() == rows) {
         // TODO: Read below
         // There's no point in updating the library if it's still the same number of items
@@ -115,18 +136,46 @@ void LibraryModel::updateLibrary()
         // it segfaults, so for now it stays.
         return;
     }
-    beginInsertRows(QModelIndex(), rows, library.count() - rows);
-    insertRows(rows, library.count() - rows);
-    endInsertRows();
-    emit dataChanged(QModelIndex(), QModelIndex());
-    rows = library.count();
-    for (const auto &song : library) {
+    */
+    if (newItems.count() == 0) {
+        return;
+    }
+
+    beginInsertRows(QModelIndex(), rowCount(), newItems.count() + rows - 1);
+    for (const auto &song : newItems) {
+        library.append(song);
         playlist->addMedia(QUrl::fromLocalFile(song.filePath));
     }
+    endInsertRows();
+
+    rows += newItems.count();
+
     emit libraryUpdated();
 }
 
 const QUrl LibraryModel::get(int row) const
 {
     return QUrl::fromLocalFile(library.at(row).filePath);
+}
+
+void LibraryModel::sortByColumn(int column)
+{
+    switch (sort) {
+    case AToZ:
+        std::sort(library.begin(), library.end(),
+                  [column](Song &a, Song &b){
+                      return a.metaData().keys().at(column) > b.metaData().keys().at(column);
+                  });
+        sort = ZToA;
+        break;
+    case ZToA:
+        std::sort(library.begin(), library.end(),
+                  [column](const auto &a, const auto &b){
+                      return a.metaData().keys().at(column) < b.metaData().keys().at(column);
+                  });
+        sort = AToZ;
+        break;
+    }
+
+    emit dataChanged(QModelIndex(), QModelIndex());
 }

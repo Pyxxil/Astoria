@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-class QLabel;
 class SensibleSlider;
+class QLabel;
 
 class DurationControls: public QWidget
 {
