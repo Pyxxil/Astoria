@@ -12,8 +12,8 @@ TrackInformation::TrackInformation(QWidget *parent, int minWidth, int maxWidth)
     layout()->addWidget(songLabel);
     layout()->addWidget(artistLabel);
 
-    setMaximumWidth(minWidth);
-    setMinimumWidth(maxWidth);
+    setMinimumWidth(minWidth);
+    setMaximumWidth(maxWidth);
 }
 
 void TrackInformation::updateLabels(QString artist, QString song)
