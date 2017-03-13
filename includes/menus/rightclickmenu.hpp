@@ -3,6 +3,8 @@
 
 #include <QMenu>
 
+#include "includes/library/song.hpp"
+
 class RightClickMenu: public QMenu
 {
 Q_OBJECT
@@ -16,10 +18,14 @@ public:
     ~RightClickMenu();
 
 public slots:
-    void display(QPoint point);
+    void display(QPoint point, const Song &songAtRow);
+    void editMetadata();
 
 private:
+    Song selectedSong;
+
     QAction *playAction;
+    QAction *editMetadataAction;
 };
 
 #endif //RIGHTCLICKMENU_HPP

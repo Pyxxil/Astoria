@@ -20,9 +20,10 @@ SET ( CMAKE_AUTORCC ON )
 
 SET ( SOURCE_FILES
 	  source/controls/durationcontrols.cpp
-      source/controls/sensibleslider.cpp
+	  source/controls/sensibleslider.cpp
 	  source/controls/playercontrols.cpp
-      source/controls/volumecontrols.cpp
+	  source/controls/volumecontrols.cpp
+	  source/metadataeditordialog.cpp
 	  source/library/librarymodel.cpp
 	  source/library/musicscanner.cpp
 	  source/menus/rightclickmenu.cpp
@@ -39,6 +40,7 @@ SET ( INCLUDE_FILES
 	  includes/controls/sensibleslider.hpp
       includes/controls/volumecontrols.hpp
 	  includes/controls/playercontrols.hpp
+	  includes/metadataeditordialog.hpp
       includes/library/librarymodel.hpp
       includes/menus/rightclickmenu.hpp
       includes/library/musicscanner.hpp
@@ -47,14 +49,12 @@ SET ( INCLUDE_FILES
 	  includes/menus/menubar.hpp
       includes/playerwindow.hpp
 	  includes/library/song.hpp
-      )
+	  )
 
 SET ( RCC_TARGETS
 	  Icons.qrc
 	  Styles.qrc
 	  )
-
-MESSAGE ( "SOURCE DIRECTORY: ${CMAKE_SOURCE_DIR}" )
 
 SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic" )
 

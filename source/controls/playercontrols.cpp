@@ -10,8 +10,6 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
     : QWidget(parent)
       , playerState(state)
 {
-    //setStyleSheet("QToolButton { border: none; }");
-
     playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
     playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
 

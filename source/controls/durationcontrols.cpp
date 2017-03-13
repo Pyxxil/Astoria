@@ -20,7 +20,6 @@ DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
             this, SIGNAL(seek(int)));
 
     durationSlider->setValue(0);
-    //setStyleSheet("QSlider::Handle { image: none; }");
 
     currentTime = new QLabel(this);
     currentTime->setText("00:00");

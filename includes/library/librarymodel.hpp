@@ -53,13 +53,14 @@ public:
 
     const QUrl get(int row) const;
 
+    const Song &songAt(int row) const { return library[row]; }
+
 public slots:
     void openDirectory();
     void updateLibrary(QList<Song>);
     void sortByColumn(int column);
 
 private:
-    int columns;
     int rows;
     QList<QString> supportedFormats;
 
@@ -71,6 +72,8 @@ private:
     };
 
     SortType sort;
+    const QString &getColumnHeader(int column) const;
+    QList<QString> columnHeaders;
 };
 
 

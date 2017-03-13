@@ -2,17 +2,16 @@
 #include "ui_playerwindow.h"
 
 #include <QMediaMetaData>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QTableView>
 #include <QMimeDatabase>
+#include <QHBoxLayout>
+#include <QTableView>
+#include <QLabel>
 
 #include <mpegfile.h>
 #include <attachedpictureframe.h>
 #include <id3v2tag.h>
 #include <id3v2extendedheader.h>
 #include <mp4tag.h>
-#include <mp4coverart.h>
 #include <mp4file.h>
 
 #include "includes/controls/durationcontrols.hpp"
@@ -27,7 +26,7 @@
 /**
  * TODO: Possible features
  * To add features list
- *	- Allow the stylesheet to be read from a file (.qss file)
+ *	- Allow the stylesheet to be read from a file (.qss file) (This is sort of done already)
  *	- User adjustable previous song time limit (that is, how long into a song does pressing
  *	  the previous button restart the song)
  *	- Allow the user to remove/add headers and change the order of them
@@ -36,11 +35,11 @@
  *	    - Save state
  *	    - Save library
  *	    - Save playlists
- *	- Alter file metadata
+ *	- Edit file metadata
  *
  * TODO: Fixes
- *  - Fix up UI stuff
- *  - Add other tags to columns in the library view
+ *  - Fix up UI stuff (This should be pretty much done, in part due to the .qss stylesheet)
+ *  - Add other tags to columns in the library view (Partly done)
  *  - Fix the Playlist problems (playing next, previous crashes, change playlist set-up)
  *  - Set up a namespace that everything can connect to
  *      - Audio stuff
@@ -56,9 +55,6 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     styleSheet.open(QFile::ReadOnly | QFile::Text);
     QTextStream styles(&styleSheet);
     qApp->setStyleSheet(styles.readAll());
-
-    //setWindowTitle(Project);
-    //setStyleSheet("background-color: #333333; font-size: 13pt;");
 
     player = new QMediaPlayer(this);
 
@@ -163,7 +159,8 @@ void PlayerWindow::playNow()
 void PlayerWindow::customMenuRequested(QPoint pos)
 {
     if (libraryView->indexAt(pos).isValid()) {
-        emit rightClickMenu->display(libraryView->viewport()->mapToGlobal(pos));
+        emit rightClickMenu->display(libraryView->viewport()->mapToGlobal(pos),
+                                     library->songAt(libraryView->indexAt(pos).row()));
     }
 }
 
@@ -255,7 +252,6 @@ void PlayerWindow::setupUI()
 
     QWidget *controlsWidget = new QWidget(this);
     controlsWidget->setLayout(controlLayout);
-    //controlsWidget->setStyleSheet("background-color: #ECF0F1; color: 333333;");
 
     QVBoxLayout *coverArtArea = new QVBoxLayout;
     coverArtArea->addStretch(1);
@@ -275,8 +271,6 @@ void PlayerWindow::setupUI()
     endLayout->addWidget(controlsWidget);
     endLayout->setContentsMargins(0, 0, 0, 0);
 
-    //libraryView->setStyleSheet("QTableView { color: #ECF0F1; selection-background-color: #666666; }\n"
-    //                               "QHeaderView::section { background-color: #333333; color: #ECF0F1; border: none; }");
     libraryView->setModel(library);
     libraryView->horizontalHeader()->setFrameShape(QFrame::NoFrame);
     libraryView->setSortingEnabled(true);
@@ -289,7 +283,7 @@ void PlayerWindow::setupUI()
     libraryView->setSelectionBehavior(QAbstractItemView::SelectRows);
     libraryView->setShowGrid(false);
     libraryView->setFrameShape(QFrame::NoFrame);
-    libraryView->horizontalHeader()->setSectionsClickable(true);
+    //libraryView->horizontalHeader()->setSectionsClickable(true);
 
     ui->centralWidget->setLayout(endLayout);
 }
@@ -299,34 +293,35 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
     QMimeDatabase db;
     QMimeType codec = db.mimeTypeForFile(song.file()->name());
 
+    bool coverArtNotFound = true;
+
     if (codec.name() == "audio/mp4") {
         TagLib::MP4::File mp4(song.file()->name());
-        TagLib::MP4::Tag* tag = mp4.tag();
-        TagLib::MP4::ItemListMap itemsListMap = tag->itemListMap();
-        TagLib::MP4::Item coverItem = itemsListMap["covr"];
-        TagLib::MP4::CoverArtList coverArtList = coverItem.toCoverArtList();
+        TagLib::MP4::CoverArtList coverArtList =
+            mp4.tag()->itemListMap()["covr"].toCoverArtList();
 
         if (!coverArtList.isEmpty()) {
             TagLib::MP4::CoverArt coverArt = coverArtList.front();
-            image.loadFromData((const uchar *)
-                                   coverArt.data().data(),coverArt.data().size());
-        } else {
-            image.load(":/CoverArtUnavailable.png");
+            image.loadFromData((const uchar *) coverArt.data().data(),
+                               coverArt.data().size());
+            coverArtNotFound = false;
         }
-    } else if (codec.name() == "audio/mpeg"){
+    }
+    else if (codec.name() == "audio/mpeg") {
         TagLib::MPEG::File file(song.file()->name());
-        TagLib::ID3v2::Tag *m_tag = file.ID3v2Tag();
-        TagLib::ID3v2::FrameList frameList = m_tag->frameList("APIC");
+        TagLib::ID3v2::FrameList frameList = file.ID3v2Tag()->frameList("APIC");
 
         if (!frameList.isEmpty()) {
             TagLib::ID3v2::AttachedPictureFrame
                 *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
 
-            image.loadFromData((const uchar *) coverImg->picture().data(), coverImg->picture().size());
-        } else {
-            image.load(":/CoverArtUnavailable.png");
+            image.loadFromData((const uchar *) coverImg->picture().data(),
+                               coverImg->picture().size());
+            coverArtNotFound = false;
         }
-    } else {
+    }
+
+    if (coverArtNotFound) {
         image.load(":/CoverArtUnavailable.png");
     }
 

@@ -5,9 +5,17 @@
 #include "includes/library/musicscanner.hpp"
 
 LibraryModel::LibraryModel()
-    : columns(5), rows(0)
+    : rows(0)
 {
     playlist = new QMediaPlaylist(this);
+
+    columnHeaders = {
+        "Artist",
+        "Album",
+        "Title",
+        "Genre",
+        "Duration",
+    };
 
     supportedFormats = {
         "*.mp3",
@@ -47,7 +55,7 @@ bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int 
 int LibraryModel::columnCount(const QModelIndex &parent) const
 {
     (void) parent;
-    return columns;
+    return columnHeaders.length();
 }
 
 int LibraryModel::rowCount(const QModelIndex &parent) const
@@ -60,17 +68,14 @@ QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int 
 {
     if (role == Qt::DisplayRole) {
         if (orientation == Qt::Horizontal) {
+            // TODO: Change this slightly so that columns can be added/removed.
             switch (section) {
             case 0:
-                return QString("Artist");
             case 1:
-                return QString("Album");
             case 2:
-                return QString("Title");
             case 3:
-                return QString("Genre");
             case 4:
-                return QString("Duration");
+                return getColumnHeader(section);
             default:
                 return QVariant();
             }
@@ -90,18 +95,18 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
         if (library.length() == 0) {
             return QVariant();
         }
-        const QMap<QString, QString> &metadata = library.at(index.row()).metaData();
+
+        const QMap<QString, QString> &metadata = songAt(index.row()).metaData();
+        const QString columnHeader = getColumnHeader(index.column());
+
+        // TODO: Change this slightly so that columns can be added/removed.
         switch (index.column()) {
         case 0:
-            return metadata["Artist"];
         case 1:
-            return metadata["Album"];
         case 2:
-            return metadata["Title"];
         case 3:
-            return metadata["Genre"];
         case 4:
-            return metadata["Duration"];
+            return metadata[columnHeader];
         default:
             return QVariant();
         }
@@ -137,7 +142,7 @@ void LibraryModel::updateLibrary(QList<Song> newItems)
         return;
     }
     */
-    if (newItems.count() == 0) {
+    if (newItems.length() == 0) {
         return;
     }
 
@@ -158,20 +163,26 @@ const QUrl LibraryModel::get(int row) const
     return QUrl::fromLocalFile(library.at(row).filePath);
 }
 
+const QString &LibraryModel::getColumnHeader(int column) const
+{
+    return columnHeaders.at(column);
+}
+
 void LibraryModel::sortByColumn(int column)
 {
+
     switch (sort) {
     case AToZ:
         std::sort(library.begin(), library.end(),
-                  [column](Song &a, Song &b){
-                      return a.metaData().keys().at(column) > b.metaData().keys().at(column);
+                  [column, this](const Song &a, const Song &b){
+                      return a.metaData()[getColumnHeader(column)] < b.metaData()[getColumnHeader(column)];
                   });
         sort = ZToA;
         break;
     case ZToA:
         std::sort(library.begin(), library.end(),
-                  [column](const auto &a, const auto &b){
-                      return a.metaData().keys().at(column) < b.metaData().keys().at(column);
+                  [column, this](const Song &a, const Song &b){
+                      return a.metaData()[getColumnHeader(column)] > b.metaData()[getColumnHeader(column)];
                   });
         sort = AToZ;
         break;

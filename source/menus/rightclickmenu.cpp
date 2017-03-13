@@ -1,13 +1,21 @@
 #include "includes/menus/rightclickmenu.hpp"
 
+#include <QFileInfo>
+
+#include "includes/metadataeditordialog.hpp"
+
 RightClickMenu::RightClickMenu(QWidget *parent)
-    : QMenu(parent)
+    : QMenu(parent), selectedSong(QFileInfo("/dev/null"))
 {
     playAction = new QAction("Play this");
-    connect(playAction, &QAction::triggered, this, &RightClickMenu::playThisNow);
+    connect(playAction, &QAction::triggered,
+            this, &RightClickMenu::playThisNow);
     addAction(playAction);
 
-    //setStyleSheet("QMenu::item:hover { background-color: #666666; }\nQMenu::Item { color: #ECF0F1; }");
+    editMetadataAction = new QAction("Edit metadata");
+    connect(editMetadataAction, &QAction::triggered,
+    this, &RightClickMenu::editMetadata);
+    addAction(editMetadataAction);
 }
 
 RightClickMenu::~RightClickMenu()
@@ -15,7 +23,15 @@ RightClickMenu::~RightClickMenu()
     delete playAction;
 }
 
-void RightClickMenu::display(QPoint point)
+void RightClickMenu::display(QPoint point, const Song &songAtRow)
 {
+    selectedSong = songAtRow;
     popup(point);
+}
+
+void RightClickMenu::editMetadata()
+{
+    MetadataEditorDialog dialog(this);
+    dialog.setupMetadata(selectedSong);
+    dialog.exec();
 }
