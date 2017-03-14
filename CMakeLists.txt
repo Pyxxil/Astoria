@@ -28,12 +28,15 @@ SET ( SOURCE_FILES
 	  source/library/librarymodel.cpp
 	  source/library/musicscanner.cpp
 	  source/menus/rightclickmenu.cpp
+	  source/library/libraryview.cpp
 	  source/library/playlist.cpp
 	  source/trackinformation.cpp
 	  source/menus/menubar.cpp
 	  source/playerwindow.cpp
 	  source/library/song.cpp
 	  source/main.cpp
+	  source/delegates/hoverdelegate.cpp
+	  source/delegates/normaldelegate.cpp
 	  )
 
 SET ( INCLUDE_FILES
@@ -45,9 +48,12 @@ SET ( INCLUDE_FILES
       includes/library/librarymodel.hpp
       includes/menus/rightclickmenu.hpp
       includes/library/musicscanner.hpp
+	  includes/library/libraryview.hpp
 	  includes/library/playlist.hpp
 	  includes/trackinformation.hpp
+	  includes/delegates/normaldelegate.hpp
 	  includes/menus/menubar.hpp
+	  includes/delegates/hoverdelegate.hpp
       includes/playerwindow.hpp
 	  includes/library/song.hpp
 	  )
