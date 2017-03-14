@@ -1,17 +1,17 @@
 #include "includes/library/playlist.hpp"
 
 Playlist::Playlist()
-    : QMediaPlaylist()
+        : QMediaPlaylist()
 {
 
 }
 
 void Playlist::next()
 {
-    QMediaPlaylist::next();
+        QMediaPlaylist::next();
 }
 
 void Playlist::previous()
 {
-    QMediaPlaylist::previous();
+        QMediaPlaylist::previous();
 }

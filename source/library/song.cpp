@@ -12,54 +12,54 @@
 #include <QDebug>
 
 Song::Song(const QFileInfo &filePath)
-    : filePath(filePath.absoluteFilePath())
+        : filePath(filePath.absoluteFilePath())
 {
-    file = TagLib::FileRef(this->filePath.toStdString().c_str());
+        file = TagLib::FileRef(this->filePath.toStdString().c_str());
 
-    updateMetadata();
+        updateMetadata();
 }
 
 Song::Song(const Song &other)
-    : filePath(other.filePath)
+        : filePath(other.filePath)
 {
-    file = TagLib::FileRef(other.filePath.toStdString().c_str());
+        file = TagLib::FileRef(other.filePath.toStdString().c_str());
 
-    updateMetadata();
+        updateMetadata();
 }
 
 const QMap<QString, QString> &Song::getMetadata() const
 {
-    return metadata;
+        return metadata;
 }
 
 void Song::updateMetadata()
 {
-    if (!file.isNull() && file.tag()) {
+        if (!file.isNull() && file.tag()) {
 
-        // TODO: Use this stuff (Taglib example tagreader), as well as audioProperties
-        // TODO: Probably use it for editing tags and such later.
-        /*
-        TagLib::PropertyMap tags = file.file()->properties();
+                // TODO: Use this stuff (Taglib example tagreader), as well as audioProperties
+                // TODO: Probably use it for editing tags and such later.
+                /*
+                TagLib::PropertyMap tags = file.file()->properties();
 
-        for (TagLib::PropertyMap::ConstIterator it = tags.begin(); it != tags.end(); ++it) {
-            for(TagLib::StringList::ConstIterator j = it->second.begin(); j != it->second.end(); ++j) {
-                std::cout << std::left << std::setw(10) << it->first << " - " << '"' << *j << '"' << std::endl;
-            }
+                for (TagLib::PropertyMap::ConstIterator it = tags.begin(); it != tags.end(); ++it) {
+                    for(TagLib::StringList::ConstIterator j = it->second.begin(); j != it->second.end(); ++j) {
+                        std::cout << std::left << std::setw(10) << it->first << " - " << '"' << *j << '"' << std::endl;
+                    }
+                }
+                */
+
+                metadata = {
+                        {"Title", TStringToQString(file.tag()->title())},
+                        {"Artist", TStringToQString(file.tag()->artist())},
+                        {"Album", TStringToQString(file.tag()->album())},
+                        {"Year", QString("%1").arg(file.tag()->year())},
+                        {"Track", QString("%1").arg(file.tag()->track())},
+                        {"Genre", TStringToQString(file.tag()->genre())},
+                        // TODO: Should probably change this part, what if it can't find the audio properties?
+                        {"Duration", QString("%1:%2")
+                                .arg(file.audioProperties()->length()/60, 2, 10, QChar('0'))
+                                .arg(file.audioProperties()->length()%60, 2, 10, QChar('0'))
+                        },
+                };
         }
-        */
-
-        metadata = {
-            {"Title", TStringToQString(file.tag()->title())},
-            {"Artist", TStringToQString(file.tag()->artist())},
-            {"Album", TStringToQString(file.tag()->album())},
-            {"Year", QString("%1").arg(file.tag()->year())},
-            {"Track", QString("%1").arg(file.tag()->track())},
-            {"Genre", TStringToQString(file.tag()->genre())},
-            // TODO: Should probably change this part, what if it can't find the audio properties?
-            {"Duration", QString("%1:%2")
-                .arg(file.audioProperties()->length() / 60, 2, 10, QChar('0'))
-                .arg(file.audioProperties()->length() % 60, 2, 10, QChar('0'))
-            },
-        };
-    }
 }

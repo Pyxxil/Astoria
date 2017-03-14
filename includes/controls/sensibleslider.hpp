@@ -3,18 +3,17 @@
 
 #include <QSlider>
 
-class SensibleSlider: public QSlider
+class SensibleSlider : public QSlider
 {
 Q_OBJECT
 
 signals:
-    void seek(int);
+        void seek(int);
 
 public:
-    SensibleSlider(QWidget *parent = nullptr, Qt::Orientation = Qt::Horizontal);
+        SensibleSlider(QWidget *parent = nullptr, Qt::Orientation = Qt::Horizontal);
 
-    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+        void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 };
-
 
 #endif //DURATIONSLIDER_HPP

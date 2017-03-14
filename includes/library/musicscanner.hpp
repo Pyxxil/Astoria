@@ -7,21 +7,20 @@
 
 #include "includes/library/song.hpp"
 
-class MusicScanner: public QThread
+class MusicScanner : public QThread
 {
 Q_OBJECT
 
 signals:
-    void passNewItems(QList<Song>);
+        void passNewItems(QList<Song>);
 
 public:
-    MusicScanner(QFileInfoList &);
+        MusicScanner(QFileInfoList &);
 
-    void run() Q_DECL_OVERRIDE;
+        void run() Q_DECL_OVERRIDE;
 
 private:
-    QFileInfoList files;
+        QFileInfoList files;
 };
-
 
 #endif //MUSICSCANNER_H

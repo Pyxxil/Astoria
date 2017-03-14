@@ -24,52 +24,52 @@ class QLabel;
 
 namespace Ui
 {
-class PlayerWindow;
+        class PlayerWindow;
 }
 
-class PlayerWindow: public QMainWindow
+class PlayerWindow : public QMainWindow
 {
 Q_OBJECT
 
 signals:
-    void durationChanged(qint64);
-    void informationChanged(QString, QString);
+        void durationChanged(qint64);
+        void informationChanged(QString, QString);
 
 public:
-    explicit PlayerWindow(QWidget *parent = 0);
-    ~PlayerWindow();
+        explicit PlayerWindow(QWidget *parent = 0);
+        ~PlayerWindow();
 
-    QMediaPlayer::State playerState() const;
+        QMediaPlayer::State playerState() const;
 
 public slots:
-    void nextSong();
-    void previousSong();
-    void timeSeek(int);
-    void metaDataChanged();
-    void playNow();
-    void customMenuRequested(QPoint pos);
-    void updatePlaylist();
-    void play();
+        void nextSong();
+        void previousSong();
+        void timeSeek(int);
+        void metaDataChanged();
+        void playNow();
+        void customMenuRequested(QPoint pos);
+        void updatePlaylist();
+        void play();
 
 private:
-    Ui::PlayerWindow *ui;
-    QMediaPlayer *player;
-    LibraryModel *library;
-    DurationControls *durationControls;
-    VolumeControls *volumeControls;
-    PlayerControls *playerControls;
-    TrackInformation *information;
-    MenuBar *menu;
-    RightClickMenu *rightClickMenu;
+        Ui::PlayerWindow *ui;
+        QMediaPlayer *player;
+        LibraryModel *library;
+        DurationControls *durationControls;
+        VolumeControls *volumeControls;
+        PlayerControls *playerControls;
+        TrackInformation *information;
+        MenuBar *menu;
+        RightClickMenu *rightClickMenu;
 
-    QLabel *coverArtLabel;
-    QTableView *libraryView;
+        QLabel *coverArtLabel;
+        QTableView *libraryView;
 
-    QImage image;
+        QImage image;
 
-    void setupConnections();
-    void setupUI();
-    void loadCoverArt(TagLib::FileRef &song);
+        void setupConnections();
+        void setupUI();
+        void loadCoverArt(TagLib::FileRef &song);
 };
 
 #endif // PLAYERWINDOW_H

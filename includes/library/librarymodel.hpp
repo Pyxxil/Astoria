@@ -26,63 +26,62 @@
  *
  */
 
-class LibraryModel: public QAbstractTableModel
+class LibraryModel : public QAbstractTableModel
 {
 Q_OBJECT
 
 signals:
-    void libraryUpdated();
+        void libraryUpdated();
 
 public:
-    LibraryModel();
-    ~LibraryModel();
+        LibraryModel();
+        ~LibraryModel();
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+        int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+        int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role) Q_DECL_OVERRIDE;
+        bool setData(const QModelIndex &index, const QVariant &value, int role) Q_DECL_OVERRIDE;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const Q_DECL_OVERRIDE;
+        QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+        QVariant headerData(int section, Qt::Orientation orientation, int role) const Q_DECL_OVERRIDE;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
+        Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
-    QMediaPlaylist *playlist;
+        QMediaPlaylist *playlist;
 
-    void scanDirectory(QString &directory);
-    void indexMightBeUpdated(const QModelIndex &index);
+        void scanDirectory(QString &directory);
+        void indexMightBeUpdated(const QModelIndex &index);
 
-    const QUrl get(int row) const;
+        const QUrl get(int row) const;
 
-    const Song &songAt(int row) const
-    { return library[row]; }
+        const Song &songAt(int row) const
+        { return library[row]; }
 
 public slots:
-    void openDirectory();
-    void updateLibrary(QList<Song>);
-    void sortByColumn(int column);
-    void updateMetadata();
+        void openDirectory();
+        void updateLibrary(QList<Song>);
+        void sortByColumn(int column);
+        void updateMetadata();
 
 private:
-    int rows;
-    QList<QString> supportedFormats;
+        int rows;
+        QList<QString> supportedFormats;
 
-    QList<Song> library;
+        QList<Song> library;
 
-    enum SortType
-    {
-        AToZ,
-        ZToA,
-    };
+        enum SortType
+        {
+                AToZ,
+                ZToA,
+        };
 
-    SortType sort;
-    const QString &getColumnHeader(int column) const;
-    QList<QString> columnHeaders;
+        SortType sort;
+        const QString &getColumnHeader(int column) const;
+        QList<QString> columnHeaders;
 
-    QModelIndex mightBeUpdated;
+        QModelIndex mightBeUpdated;
 
-    int current = -1;
+        int current = -1;
 };
-
 
 #endif //LIBRARY_HPP

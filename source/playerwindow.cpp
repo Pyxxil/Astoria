@@ -29,7 +29,6 @@
 #include "includes/menus/menubar.hpp"
 #include "includes/library/libraryview.hpp"
 
-
 /**
  * TODO: Possible features
  * To add features list
@@ -51,62 +50,64 @@
  *  - Set up a namespace that everything can connect to
  *      - Audio stuff
  *      - UI stuff
+ *  - Now that I've subclassed QTableView, think about moving all logic to do with the
+ *    library model into that, instead of here.
  */
 
 PlayerWindow::PlayerWindow(QWidget *parent)
-    : QMainWindow(parent),
-      ui(new Ui::PlayerWindow)
+        : QMainWindow(parent),
+          ui(new Ui::PlayerWindow)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
 
-    QFile styleSheet(":/StyleSheet.qss");
-    styleSheet.open(QFile::ReadOnly | QFile::Text);
-    QTextStream styles(&styleSheet);
-    qApp->setStyleSheet(styles.readAll());
+        QFile styleSheet(":/StyleSheet.qss");
+        styleSheet.open(QFile::ReadOnly | QFile::Text);
+        QTextStream styles(&styleSheet);
+        qApp->setStyleSheet(styles.readAll());
 
-    player = new QMediaPlayer(this);
+        player = new QMediaPlayer(this);
 
-    playerControls = new PlayerControls(this, player->state());
-    volumeControls = new VolumeControls(this, player->volume(),
-                                        player->isMuted(), 150, 150);
-    volumeControls->setContentsMargins(0, 0, 5, 0);
-    durationControls = new DurationControls(this, 200);
+        playerControls = new PlayerControls(this, player->state());
+        volumeControls = new VolumeControls(this, player->volume(),
+                                            player->isMuted(), 150, 150);
+        volumeControls->setContentsMargins(0, 0, 5, 0);
+        durationControls = new DurationControls(this, 200);
 
-    library = new LibraryModel;
-    libraryView = new LibraryView(this, library);
+        library = new LibraryModel;
+        libraryView = new LibraryView(this, library);
 
-    player->setPlaylist(library->playlist);
+        player->setPlaylist(library->playlist);
 
-    menu = new MenuBar(this);
-    for (const auto &_menu : menu->getAllMenus()) {
-        ui->menuBar->addMenu(_menu);
-    }
+        menu = new MenuBar(this);
+        for (const auto &_menu : menu->getAllMenus()) {
+                ui->menuBar->addMenu(_menu);
+        }
 
-    information = new TrackInformation(this, 200, 200);
+        information = new TrackInformation(this, 200, 200);
 
-    rightClickMenu = new RightClickMenu(this);
+        rightClickMenu = new RightClickMenu(this);
 
-    coverArtLabel = new QLabel(this);
-    coverArtLabel->setScaledContents(true);
-    coverArtLabel->setBackgroundRole(QPalette::Base);
-    coverArtLabel->setMinimumSize(200, 200);
-    coverArtLabel->setMaximumSize(200, 200);
-    coverArtLabel->setContentsMargins(0, 0, 0, 0);
+        coverArtLabel = new QLabel(this);
+        coverArtLabel->setScaledContents(true);
+        coverArtLabel->setBackgroundRole(QPalette::Base);
+        coverArtLabel->setMinimumSize(200, 200);
+        coverArtLabel->setMaximumSize(200, 200);
+        coverArtLabel->setContentsMargins(0, 0, 0, 0);
 
-    setupConnections();
-    setupUI();
+        setupConnections();
+        setupUI();
 }
 
 PlayerWindow::~PlayerWindow()
 {
-    delete ui;
+        delete ui;
 }
 
 void PlayerWindow::nextSong()
 {
-    if (!player->playlist()->isEmpty()) {
-        player->playlist()->next();
-    }
+        if (!player->playlist()->isEmpty()) {
+                player->playlist()->next();
+        }
 }
 
 /**
@@ -114,216 +115,218 @@ void PlayerWindow::nextSong()
  */
 void PlayerWindow::previousSong()
 {
-    // TODO: Make the time to go to the previous song adjustable
-    // TODO: What to do if the user has pressed go to previous and there aren't any songs
-    // TODO: before it? Do we set position to 0, and pause the media? Or just reset the song?
-    if (player->position() < 10000 && player->playlist()->currentIndex() > 0) {
-        player->playlist()->previous();
-    }
-    else {
-        player->setPosition(0);
-    }
+        // TODO: Make the time to go to the previous song adjustable
+        // TODO: What to do if the user has pressed go to previous and there aren't any songs
+        // TODO: before it? Do we set position to 0, and pause the media? Or just reset the song?
+        if (player->position() < 10000 && player->playlist()->currentIndex() > 0) {
+                player->playlist()->previous();
+        } else {
+                player->setPosition(0);
+        }
 }
 
 QMediaPlayer::State PlayerWindow::playerState() const
 {
-    if (player == nullptr) { return QMediaPlayer::StoppedState; }
-    else { return player->state(); }
+        if (player==nullptr) {
+                return QMediaPlayer::StoppedState;
+        } else {
+                return player->state();
+        }
 }
 
 void PlayerWindow::timeSeek(int time)
 {
-    player->setPosition(time);
+        player->setPosition(time);
 }
 
 void PlayerWindow::metaDataChanged()
 {
-    emit durationChanged(player->duration());
-    TagLib::FileRef song(player->currentMedia().canonicalUrl().toString().remove(0, 7).toStdString().c_str());
-    setWindowTitle(QString("%1 - %2")
-                       .arg(TStringToQString(song.tag()->artist()))
-                       .arg(TStringToQString(song.tag()->title())));
-    emit informationChanged(TStringToQString(song.tag()->artist()),
-                            TStringToQString(song.tag()->title()));
+        emit durationChanged(player->duration());
+        TagLib::FileRef song(player->currentMedia().canonicalUrl().toString().remove(0, 7).toStdString().c_str());
+        setWindowTitle(QString("%1 - %2")
+                               .arg(TStringToQString(song.tag()->artist()))
+                               .arg(TStringToQString(song.tag()->title())));
+        emit informationChanged(TStringToQString(song.tag()->artist()),
+                                TStringToQString(song.tag()->title()));
 
-    loadCoverArt(song);
+        loadCoverArt(song);
 }
 
 void PlayerWindow::play()
 {
-    if (!library->playlist->isEmpty()) {
-        emit player->play();
-    }
+        if (!library->playlist->isEmpty()) {
+                emit player->play();
+        }
 }
 
 void PlayerWindow::playNow()
 {
-    // TODO: Fix this.
-    player->playlist()->insertMedia(0, library->get(libraryView->currentIndex().row()));
-    player->playlist()->setCurrentIndex(0);
-    emit player->play();
+        // TODO: Fix this.
+        player->playlist()->insertMedia(0, library->get(libraryView->currentIndex().row()));
+        player->playlist()->setCurrentIndex(0);
+        emit player->play();
 }
 
 void PlayerWindow::customMenuRequested(QPoint pos)
 {
-    if (libraryView->indexAt(pos).isValid()) {
-        library->indexMightBeUpdated(libraryView->indexAt(pos));
-        emit rightClickMenu->display(libraryView->viewport()->mapToGlobal(pos),
-                                     library->songAt(libraryView->indexAt(pos).row()));
-    }
+        if (libraryView->indexAt(pos).isValid()) {
+                library->indexMightBeUpdated(libraryView->indexAt(pos));
+                emit rightClickMenu->display(libraryView->viewport()->mapToGlobal(pos),
+                                             library->songAt(libraryView->indexAt(pos).row()));
+        }
 }
 
 void PlayerWindow::updatePlaylist()
 {
-    // TODO: Figure out what to do here
+        // TODO: Figure out what to do here
 }
 
 void PlayerWindow::setupConnections()
 {
-    connect(playerControls, SIGNAL(play()),
-            this, SLOT(play()));
-    connect(playerControls, SIGNAL(pause()),
-            player, SLOT(pause()));
-    connect(playerControls, SIGNAL(next()),
-            this, SLOT(nextSong()));
-    connect(playerControls, SIGNAL(previous()),
-            this, SLOT(previousSong()));
-    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
-            playerControls, SLOT(setState(QMediaPlayer::State)));
+        connect(playerControls, SIGNAL(play()),
+                this, SLOT(play()));
+        connect(playerControls, SIGNAL(pause()),
+                player, SLOT(pause()));
+        connect(playerControls, SIGNAL(next()),
+                this, SLOT(nextSong()));
+        connect(playerControls, SIGNAL(previous()),
+                this, SLOT(previousSong()));
+        connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
+                playerControls, SLOT(setState(QMediaPlayer::State)));
 
-    connect(volumeControls, SIGNAL(changeVolume(int)),
-            player, SLOT(setVolume(int)));
-    connect(volumeControls, SIGNAL(mute(bool)),
-            player, SLOT(setMuted(bool)));
+        connect(volumeControls, SIGNAL(changeVolume(int)),
+                player, SLOT(setVolume(int)));
+        connect(volumeControls, SIGNAL(mute(bool)),
+                player, SLOT(setMuted(bool)));
 
-    connect(player, SIGNAL(volumeChanged(int)),
-            volumeControls, SLOT(setVolume(int)));
-    connect(player, SIGNAL(mutedChanged(bool)),
-            volumeControls, SLOT(setMute(bool)));
-    connect(player, SIGNAL(positionChanged(qint64)),
-            durationControls, SLOT(positionChanged(qint64)));
-    connect(player, SIGNAL(metaDataChanged()),
-            this, SLOT(metaDataChanged()));
-    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
-            menu, SLOT(playPauseChangeText(QMediaPlayer::State)));
+        connect(player, SIGNAL(volumeChanged(int)),
+                volumeControls, SLOT(setVolume(int)));
+        connect(player, SIGNAL(mutedChanged(bool)),
+                volumeControls, SLOT(setMute(bool)));
+        connect(player, SIGNAL(positionChanged(qint64)),
+                durationControls, SLOT(positionChanged(qint64)));
+        connect(player, SIGNAL(metaDataChanged()),
+                this, SLOT(metaDataChanged()));
+        connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
+                menu, SLOT(playPauseChangeText(QMediaPlayer::State)));
 
-    connect(durationControls, SIGNAL(seek(int)),
-            this, SLOT(timeSeek(int)));
+        connect(durationControls, SIGNAL(seek(int)),
+                this, SLOT(timeSeek(int)));
 
-    connect(menu, SIGNAL(play()),
-            player, SLOT(play()));
-    connect(menu, SIGNAL(pause()),
-            player, SLOT(pause()));
-    connect(menu, SIGNAL(gotoNextSong()),
-            this, SLOT(nextSong()));
-    connect(menu, SIGNAL(gotoPreviousSong()),
-            this, SLOT(previousSong()));
-    connect(menu, SIGNAL(updateLibrary()),
-            library, SLOT(openDirectory()));
+        connect(menu, SIGNAL(play()),
+                player, SLOT(play()));
+        connect(menu, SIGNAL(pause()),
+                player, SLOT(pause()));
+        connect(menu, SIGNAL(gotoNextSong()),
+                this, SLOT(nextSong()));
+        connect(menu, SIGNAL(gotoPreviousSong()),
+                this, SLOT(previousSong()));
+        connect(menu, SIGNAL(updateLibrary()),
+                library, SLOT(openDirectory()));
 
-    connect(library, SIGNAL(libraryUpdated()),
-            this, SLOT(updatePlaylist()));
+        connect(library, SIGNAL(libraryUpdated()),
+                this, SLOT(updatePlaylist()));
 
-    connect(this, SIGNAL(informationChanged(QString, QString)),
-            information, SLOT(updateLabels(QString, QString)));
-    connect(this, SIGNAL(durationChanged(qint64)),
-            durationControls, SLOT(songChanged(qint64)));
+        connect(this, SIGNAL(informationChanged(QString, QString)),
+                information, SLOT(updateLabels(QString, QString)));
+        connect(this, SIGNAL(durationChanged(qint64)),
+                durationControls, SLOT(songChanged(qint64)));
 
-    connect(libraryView, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(customMenuRequested(QPoint)));
-    connect(libraryView->horizontalHeader(), SIGNAL(sectionClicked(int)),
-            library, SLOT(sortByColumn(int)));
-    connect(libraryView, SIGNAL(doubleClicked(const QModelIndex &)),
-            this, SLOT(playNow()));
+        connect(libraryView, SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(customMenuRequested(QPoint)));
+        connect(libraryView->horizontalHeader(), SIGNAL(sectionClicked(int)),
+                library, SLOT(sortByColumn(int)));
+        connect(libraryView, SIGNAL(doubleClicked(
+                                            const QModelIndex &)),
+                this, SLOT(playNow()));
 
-    connect(rightClickMenu, SIGNAL(playThisNow()),
-            this, SLOT(playNow()));
-    connect(rightClickMenu, SIGNAL(updateLibrary()),
-            library, SLOT(updateMetadata()));
+        connect(rightClickMenu, SIGNAL(playThisNow()),
+                this, SLOT(playNow()));
+        connect(rightClickMenu, SIGNAL(updateLibrary()),
+                library, SLOT(updateMetadata()));
 }
 
 void PlayerWindow::setupUI()
 {
-    QHBoxLayout *centralPlayerControlsLayout = new QHBoxLayout;
-    centralPlayerControlsLayout->addStretch(1);
-    centralPlayerControlsLayout->addSpacing(1);
-    centralPlayerControlsLayout->addWidget(playerControls);
-    centralPlayerControlsLayout->addStretch(1);
-    centralPlayerControlsLayout->addSpacing(1);
-    centralPlayerControlsLayout->setContentsMargins(0, 0, 0, 0);
+        QHBoxLayout *centralPlayerControlsLayout = new QHBoxLayout;
+        centralPlayerControlsLayout->addStretch(1);
+        centralPlayerControlsLayout->addSpacing(1);
+        centralPlayerControlsLayout->addWidget(playerControls);
+        centralPlayerControlsLayout->addStretch(1);
+        centralPlayerControlsLayout->addSpacing(1);
+        centralPlayerControlsLayout->setContentsMargins(0, 0, 0, 0);
 
-    QVBoxLayout *playerDurationControlsLayout = new QVBoxLayout;
-    playerDurationControlsLayout->addLayout(centralPlayerControlsLayout);
-    playerDurationControlsLayout->addWidget(durationControls);
-    playerDurationControlsLayout->setContentsMargins(0, 0, 0, 0);
+        QVBoxLayout *playerDurationControlsLayout = new QVBoxLayout;
+        playerDurationControlsLayout->addLayout(centralPlayerControlsLayout);
+        playerDurationControlsLayout->addWidget(durationControls);
+        playerDurationControlsLayout->setContentsMargins(0, 0, 0, 0);
 
-    QHBoxLayout *controlLayout = new QHBoxLayout;
-    controlLayout->addWidget(information);
-    controlLayout->addLayout(playerDurationControlsLayout);
-    controlLayout->addWidget(volumeControls);
-    controlLayout->setContentsMargins(0, 0, 0, 0);
+        QHBoxLayout *controlLayout = new QHBoxLayout;
+        controlLayout->addWidget(information);
+        controlLayout->addLayout(playerDurationControlsLayout);
+        controlLayout->addWidget(volumeControls);
+        controlLayout->setContentsMargins(0, 0, 0, 0);
 
-    QWidget *controlsWidget = new QWidget(this);
-    controlsWidget->setLayout(controlLayout);
-    controlsWidget->setMaximumHeight(120);
+        QWidget *controlsWidget = new QWidget(this);
+        controlsWidget->setLayout(controlLayout);
+        controlsWidget->setMaximumHeight(120);
 
-    QVBoxLayout *coverArtArea = new QVBoxLayout;
-    coverArtArea->addStretch(1);
-    coverArtArea->addSpacing(1);
-    coverArtArea->addWidget(coverArtLabel);
-    coverArtLabel->setContentsMargins(0, 0, 0, 0);
-    coverArtLabel->setMaximumWidth(information->maximumWidth());
-    coverArtArea->setContentsMargins(0, 0, 0, 0);
+        QVBoxLayout *coverArtArea = new QVBoxLayout;
+        coverArtArea->addStretch(1);
+        coverArtArea->addSpacing(1);
+        coverArtArea->addWidget(coverArtLabel);
+        coverArtLabel->setContentsMargins(0, 0, 0, 0);
+        coverArtLabel->setMaximumWidth(information->maximumWidth());
+        coverArtArea->setContentsMargins(0, 0, 0, 0);
 
-    QHBoxLayout *uiLayout = new QHBoxLayout;
-    uiLayout->addLayout(coverArtArea);
-    uiLayout->addWidget(libraryView, 1);
-    uiLayout->setContentsMargins(0, 0, 0, 0);
+        QHBoxLayout *uiLayout = new QHBoxLayout;
+        uiLayout->addLayout(coverArtArea);
+        uiLayout->addWidget(libraryView, 1);
+        uiLayout->setContentsMargins(0, 0, 0, 0);
 
-    QVBoxLayout *endLayout = new QVBoxLayout;
-    endLayout->addLayout(uiLayout);
-    endLayout->addWidget(controlsWidget);
-    endLayout->setContentsMargins(0, 0, 0, 0);
+        QVBoxLayout *endLayout = new QVBoxLayout;
+        endLayout->addLayout(uiLayout);
+        endLayout->addWidget(controlsWidget);
+        endLayout->setContentsMargins(0, 0, 0, 0);
 
-    ui->centralWidget->setLayout(endLayout);
+        ui->centralWidget->setLayout(endLayout);
 }
 
 void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 {
-    QMimeDatabase db;
-    QMimeType codec = db.mimeTypeForFile(song.file()->name());
+        QMimeDatabase db;
+        QMimeType codec = db.mimeTypeForFile(song.file()->name());
 
-    bool coverArtNotFound = true;
+        bool coverArtNotFound = true;
 
-    if (codec.name() == "audio/mp4") {
-        TagLib::MP4::File mp4(song.file()->name());
-        TagLib::MP4::CoverArtList coverArtList =
-            mp4.tag()->itemListMap()["covr"].toCoverArtList();
+        if (codec.name()=="audio/mp4") {
+                TagLib::MP4::File mp4(song.file()->name());
+                TagLib::MP4::CoverArtList coverArtList =
+                        mp4.tag()->itemListMap()["covr"].toCoverArtList();
 
-        if (!coverArtList.isEmpty()) {
-            TagLib::MP4::CoverArt coverArt = coverArtList.front();
-            image.loadFromData((const uchar *) coverArt.data().data(),
-                               coverArt.data().size());
-            coverArtNotFound = false;
+                if (!coverArtList.isEmpty()) {
+                        TagLib::MP4::CoverArt coverArt = coverArtList.front();
+                        image.loadFromData((const uchar *) coverArt.data().data(),
+                                           coverArt.data().size());
+                        coverArtNotFound = false;
+                }
+        } else if (codec.name()=="audio/mpeg") {
+                TagLib::MPEG::File file(song.file()->name());
+                TagLib::ID3v2::FrameList frameList = file.ID3v2Tag()->frameList("APIC");
+
+                if (!frameList.isEmpty()) {
+                        TagLib::ID3v2::AttachedPictureFrame
+                                *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
+
+                        image.loadFromData((const uchar *) coverImg->picture().data(),
+                                           coverImg->picture().size());
+                        coverArtNotFound = false;
+                }
         }
-    }
-    else if (codec.name() == "audio/mpeg") {
-        TagLib::MPEG::File file(song.file()->name());
-        TagLib::ID3v2::FrameList frameList = file.ID3v2Tag()->frameList("APIC");
 
-        if (!frameList.isEmpty()) {
-            TagLib::ID3v2::AttachedPictureFrame
-                *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-            image.loadFromData((const uchar *) coverImg->picture().data(),
-                               coverImg->picture().size());
-            coverArtNotFound = false;
+        if (coverArtNotFound) {
+                image.load(":/CoverArtUnavailable.png");
         }
-    }
 
-    if (coverArtNotFound) {
-        image.load(":/CoverArtUnavailable.png");
-    }
-
-    coverArtLabel->setPixmap(QPixmap::fromImage(image));
+        coverArtLabel->setPixmap(QPixmap::fromImage(image));
 }
