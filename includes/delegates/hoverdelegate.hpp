@@ -13,5 +13,4 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
 };
 
-
 #endif //MUSICPLAYER_HOVERDELEGATE_HPP

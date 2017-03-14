@@ -3,14 +3,16 @@
 #include <QToolButton>
 #include <QBoxLayout>
 
-static constexpr int iconWidth = 25;
-
-static constexpr int iconHeight = 25;
+static constexpr int iconWidth = 20;
+static constexpr int iconHeight = 20;
 
 PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
     : QWidget(parent),
       playerState(state)
 {
+    // Move it closer to the duration control at the bottom of the screen
+    setContentsMargins(0, 0, 0, -20);
+
     playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
     playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
 

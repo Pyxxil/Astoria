@@ -8,6 +8,9 @@ TrackInformation::TrackInformation(QWidget *parent, int minWidth, int maxWidth)
     songLabel = new QLabel(this);
     artistLabel = new QLabel(this);
 
+    // Move it a little closer to the controls to it's right.
+    setContentsMargins(0, 0, -10, 0);
+
     setLayout(new QVBoxLayout());
     layout()->addWidget(songLabel);
     layout()->addWidget(artistLabel);

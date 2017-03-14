@@ -11,8 +11,11 @@ DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
     : QWidget(parent),
       duration(0)
 {
+    // Move it closer to the player controls above it
+    setContentsMargins(0, -15, 0, 0);
     setMinimumWidth(minWidth);
     setMaximumWidth(maxWidth);
+    setMaximumHeight(35);
 
     durationSlider = new SensibleSlider(this);
     connect(durationSlider, SIGNAL(sliderMoved(int)),

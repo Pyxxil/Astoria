@@ -25,6 +25,8 @@ VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWi
     connect(volumeSlider, SIGNAL(valueChanged(int)),
             this, SLOT(volumeSliderValueChanged()));
 
+    // Move it slightly away from the edge of the window
+    setContentsMargins(0, 0, 10, 0);
     setMinimumWidth(minWidth);
     setMaximumWidth(maxWidth);
 

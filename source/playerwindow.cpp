@@ -72,8 +72,8 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     volumeControls->setContentsMargins(0, 0, 5, 0);
     durationControls = new DurationControls(this, 200);
 
-    library = new LibraryModel();
-    libraryView = new LibraryView;
+    library = new LibraryModel;
+    libraryView = new LibraryView(this, library);
 
     player->setPlaylist(library->playlist);
 
@@ -195,20 +195,20 @@ void PlayerWindow::setupConnections()
             player, SLOT(setVolume(int)));
     connect(volumeControls, SIGNAL(mute(bool)),
             player, SLOT(setMuted(bool)));
+
     connect(player, SIGNAL(volumeChanged(int)),
             volumeControls, SLOT(setVolume(int)));
     connect(player, SIGNAL(mutedChanged(bool)),
             volumeControls, SLOT(setMute(bool)));
-
     connect(player, SIGNAL(positionChanged(qint64)),
             durationControls, SLOT(positionChanged(qint64)));
-    connect(durationControls, SIGNAL(seek(int)),
-            this, SLOT(timeSeek(int)));
-
-    connect(this, SIGNAL(durationChanged(qint64)),
-            durationControls, SLOT(songChanged(qint64)));
     connect(player, SIGNAL(metaDataChanged()),
             this, SLOT(metaDataChanged()));
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
+            menu, SLOT(playPauseChangeText(QMediaPlayer::State)));
+
+    connect(durationControls, SIGNAL(seek(int)),
+            this, SLOT(timeSeek(int)));
 
     connect(menu, SIGNAL(play()),
             player, SLOT(play()));
@@ -220,23 +220,24 @@ void PlayerWindow::setupConnections()
             this, SLOT(previousSong()));
     connect(menu, SIGNAL(updateLibrary()),
             library, SLOT(openDirectory()));
-    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
-            menu, SLOT(playPauseChangeText(QMediaPlayer::State)));
 
     connect(library, SIGNAL(libraryUpdated()),
             this, SLOT(updatePlaylist()));
 
-    connect(libraryView, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(customMenuRequested(QPoint)));
-    connect(rightClickMenu, SIGNAL(playThisNow()),
-            this, SLOT(playNow()));
-
     connect(this, SIGNAL(informationChanged(QString, QString)),
             information, SLOT(updateLabels(QString, QString)));
+    connect(this, SIGNAL(durationChanged(qint64)),
+            durationControls, SLOT(songChanged(qint64)));
 
+    connect(libraryView, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(customMenuRequested(QPoint)));
     connect(libraryView->horizontalHeader(), SIGNAL(sectionClicked(int)),
             library, SLOT(sortByColumn(int)));
+    connect(libraryView, SIGNAL(doubleClicked(const QModelIndex &)),
+            this, SLOT(playNow()));
 
+    connect(rightClickMenu, SIGNAL(playThisNow()),
+            this, SLOT(playNow()));
     connect(rightClickMenu, SIGNAL(updateLibrary()),
             library, SLOT(updateMetadata()));
 }
@@ -264,6 +265,7 @@ void PlayerWindow::setupUI()
 
     QWidget *controlsWidget = new QWidget(this);
     controlsWidget->setLayout(controlLayout);
+    controlsWidget->setMaximumHeight(120);
 
     QVBoxLayout *coverArtArea = new QVBoxLayout;
     coverArtArea->addStretch(1);
@@ -282,19 +284,6 @@ void PlayerWindow::setupUI()
     endLayout->addLayout(uiLayout);
     endLayout->addWidget(controlsWidget);
     endLayout->setContentsMargins(0, 0, 0, 0);
-
-    libraryView->setModel(library);
-    libraryView->horizontalHeader()->setFrameShape(QFrame::NoFrame);
-    libraryView->setSortingEnabled(true);
-    libraryView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    libraryView->horizontalHeader()->setHighlightSections(false);
-    libraryView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    libraryView->horizontalHeader()->setFrameRect(QRect());
-    libraryView->verticalHeader()->setVisible(false);
-    libraryView->setContextMenuPolicy(Qt::CustomContextMenu);
-    libraryView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    libraryView->setShowGrid(false);
-    libraryView->setFrameShape(QFrame::NoFrame);
 
     ui->centralWidget->setLayout(endLayout);
 }

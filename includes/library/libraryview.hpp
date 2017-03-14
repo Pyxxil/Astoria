@@ -11,7 +11,7 @@ class LibraryView: public QTableView
 Q_OBJECT
 
 public:
-    LibraryView(QWidget *parent = nullptr);
+    LibraryView(QWidget *parent = nullptr, QAbstractItemModel *library = nullptr);
     void setDelegate(int row, bool doHover);
 
 public slots:

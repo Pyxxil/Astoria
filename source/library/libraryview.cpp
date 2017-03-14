@@ -1,12 +1,30 @@
 #include "includes/library/libraryview.hpp"
 
-LibraryView::LibraryView(QWidget *parent)
+#include <QHeaderView>
+
+LibraryView::LibraryView(QWidget *parent, QAbstractItemModel *library)
     : QTableView(parent)
 {
     setMouseTracking(true);
 
     connect(this, SIGNAL(entered(const QModelIndex &)),
             this, SLOT(entry(const QModelIndex &)));
+
+    if (library != nullptr) {
+        setModel(library);
+    }
+
+    horizontalHeader()->setFrameShape(QFrame::NoFrame);
+    setSortingEnabled(true);
+    horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    horizontalHeader()->setHighlightSections(false);
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    horizontalHeader()->setFrameRect(QRect());
+    verticalHeader()->setVisible(false);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+    setShowGrid(false);
+    setFrameShape(QFrame::NoFrame);
 }
 
 void LibraryView::entry(const QModelIndex &index)
