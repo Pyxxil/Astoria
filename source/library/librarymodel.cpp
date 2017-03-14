@@ -91,24 +91,26 @@ Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
-    if (index.isValid() && role == Qt::DisplayRole) {
-        if (library.length() == 0) {
-            return QVariant();
-        }
+    if (index.isValid()) {
+        if (role == Qt::DisplayRole) {
+            if (library.length() == 0) {
+                return QVariant();
+            }
 
-        const QMap<QString, QString> &metadata = songAt(index.row()).getMetadata();
-        const QString columnHeader = getColumnHeader(index.column());
+            const QMap<QString, QString> &metadata = songAt(index.row()).getMetadata();
+            const QString columnHeader = getColumnHeader(index.column());
 
-        // TODO: Change this slightly so that columns can be added/removed.
-        switch (index.column()) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-            return metadata[columnHeader];
-        default:
-            return QVariant();
+            // TODO: Change this slightly so that columns can be added/removed.
+            switch (index.column()) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                return metadata[columnHeader];
+            default:
+                return QVariant();
+            }
         }
     }
 

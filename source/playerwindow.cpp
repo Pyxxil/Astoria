@@ -27,6 +27,7 @@
 #include "includes/menus/rightclickmenu.hpp"
 #include "includes/trackinformation.hpp"
 #include "includes/menus/menubar.hpp"
+#include "includes/library/libraryview.hpp"
 
 
 /**
@@ -72,7 +73,7 @@ PlayerWindow::PlayerWindow(QWidget *parent)
     durationControls = new DurationControls(this, 200);
 
     library = new LibraryModel();
-    libraryView = new QTableView;
+    libraryView = new LibraryView;
 
     player->setPlaylist(library->playlist);
 
@@ -294,7 +295,6 @@ void PlayerWindow::setupUI()
     libraryView->setSelectionBehavior(QAbstractItemView::SelectRows);
     libraryView->setShowGrid(false);
     libraryView->setFrameShape(QFrame::NoFrame);
-    //libraryView->horizontalHeader()->setSectionsClickable(true);
 
     ui->centralWidget->setLayout(endLayout);
 }

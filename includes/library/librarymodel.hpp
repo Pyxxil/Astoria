@@ -80,6 +80,8 @@ private:
     QList<QString> columnHeaders;
 
     QModelIndex mightBeUpdated;
+
+    int current = -1;
 };
 
 
