@@ -295,7 +295,6 @@ void PlayerWindow::setupUI()
     libraryView->setSelectionBehavior(QAbstractItemView::SelectRows);
     libraryView->setShowGrid(false);
     libraryView->setFrameShape(QFrame::NoFrame);
-    //libraryView->horizontalHeader()->setSectionsClickable(true);
 
     ui->centralWidget->setLayout(endLayout);
 }

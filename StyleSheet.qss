@@ -817,8 +817,8 @@ QTableView::item:pressed, QListView::item:pressed, QTreeView::item:pressed {
   color: #eff0f1;
 }
 
-QTableView::item:selected:active, QTreeView::item:selected:active, QListView::item:selected:active {
-  background: #34373a;
+QTableView::item:selected:active, QTreeView::item:selected:active, QListView::item:selected:active, QTableView::item:hover {
+  background-color: #34373a;
   color: #eff0f1;
 }
 
