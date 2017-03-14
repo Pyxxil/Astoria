@@ -7,12 +7,18 @@
 #include <QTableView>
 #include <QLabel>
 
+// Taglib, at least on OSX, throws a couple of deprecated declaration warnings
+// which are annoying to see, and interfere with -Werror. This might not be a
+// good thing to do, but it solves this problem for now.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <mpegfile.h>
 #include <attachedpictureframe.h>
 #include <id3v2tag.h>
 #include <id3v2extendedheader.h>
 #include <mp4tag.h>
 #include <mp4file.h>
+#pragma GCC diagnostic pop
 
 #include "includes/controls/durationcontrols.hpp"
 #include "includes/controls/playercontrols.hpp"
@@ -47,7 +53,8 @@
  */
 
 PlayerWindow::PlayerWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::PlayerWindow)
+    : QMainWindow(parent),
+      ui(new Ui::PlayerWindow)
 {
     ui->setupUi(this);
 
@@ -159,6 +166,7 @@ void PlayerWindow::playNow()
 void PlayerWindow::customMenuRequested(QPoint pos)
 {
     if (libraryView->indexAt(pos).isValid()) {
+        library->indexMightBeUpdated(libraryView->indexAt(pos));
         emit rightClickMenu->display(libraryView->viewport()->mapToGlobal(pos),
                                      library->songAt(libraryView->indexAt(pos).row()));
     }
@@ -227,6 +235,9 @@ void PlayerWindow::setupConnections()
 
     connect(libraryView->horizontalHeader(), SIGNAL(sectionClicked(int)),
             library, SLOT(sortByColumn(int)));
+
+    connect(rightClickMenu, SIGNAL(updateLibrary()),
+            library, SLOT(updateMetadata()));
 }
 
 void PlayerWindow::setupUI()

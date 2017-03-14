@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 
-class TrackInformation : public QWidget
+class TrackInformation: public QWidget
 {
 Q_OBJECT
 

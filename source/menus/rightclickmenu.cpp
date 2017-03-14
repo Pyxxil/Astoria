@@ -1,11 +1,10 @@
 #include "includes/menus/rightclickmenu.hpp"
 
-#include <QFileInfo>
-
 #include "includes/metadataeditordialog.hpp"
 
 RightClickMenu::RightClickMenu(QWidget *parent)
-    : QMenu(parent), selectedSong(QFileInfo("/dev/null"))
+    : QMenu(parent),
+      selectedSong(QFileInfo("/dev/null"))
 {
     playAction = new QAction("Play this");
     connect(playAction, &QAction::triggered,
@@ -14,7 +13,7 @@ RightClickMenu::RightClickMenu(QWidget *parent)
 
     editMetadataAction = new QAction("Edit metadata");
     connect(editMetadataAction, &QAction::triggered,
-    this, &RightClickMenu::editMetadata);
+            this, &RightClickMenu::editMetadata);
     addAction(editMetadataAction);
 }
 
@@ -32,6 +31,8 @@ void RightClickMenu::display(QPoint point, const Song &songAtRow)
 void RightClickMenu::editMetadata()
 {
     MetadataEditorDialog dialog(this);
+    connect(&dialog, SIGNAL(libraryNeedsUpdating()),
+            this, SIGNAL(updateLibrary()));
     dialog.setupMetadata(selectedSong);
     dialog.exec();
 }

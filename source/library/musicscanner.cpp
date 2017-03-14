@@ -9,7 +9,7 @@ void MusicScanner::run()
 {
     QList<Song> songs;
     qRegisterMetaType<QList<Song>>("QList<Song>");
-    for (const auto &file : files) {
+    for (auto &file : files) {
         /*
         bool isAlreadyInLibrary = false;
         // TODO: Think about if this is the right choice. With a large library,

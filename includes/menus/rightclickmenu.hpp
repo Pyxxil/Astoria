@@ -12,6 +12,7 @@ Q_OBJECT
 signals:
     void playThisNext();
     void playThisNow();
+    void updateLibrary();
 
 public:
     RightClickMenu(QWidget *parent = nullptr);

@@ -4,11 +4,12 @@
 #include <QBoxLayout>
 
 static constexpr int iconWidth = 25;
+
 static constexpr int iconHeight = 25;
 
 PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
-    : QWidget(parent)
-      , playerState(state)
+    : QWidget(parent),
+      playerState(state)
 {
     playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
     playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
@@ -27,7 +28,7 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
 
     playPauseButton = new QToolButton(this);
     playPauseButton->setIcon(playPauseIcon);
-    playPauseButton->setIconSize(QSize(static_cast<int>(iconWidth  * 1.5),
+    playPauseButton->setIconSize(QSize(static_cast<int>(iconWidth * 1.5),
                                        static_cast<int>(iconHeight * 1.5)));
     playPauseButton->setCheckable(true);
     playPauseButton->setChecked(true);

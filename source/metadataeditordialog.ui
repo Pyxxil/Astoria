@@ -13,156 +13,186 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
-   <item row="10" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="11" column="1">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="12" column="1">
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="13" column="1">
-    <spacer name="verticalSpacer_4">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="14" column="1">
-    <spacer name="verticalSpacer_5">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="15" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="songTitleLabel">
-     <property name="text">
-      <string>TItle</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="songTitleTextbox"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="artistLabel">
-     <property name="text">
-      <string>Artist</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="artistTextbox"/>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="albumLabel">
-     <property name="text">
-      <string>Album</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="albumTextbox"/>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="trackLabel">
-     <property name="text">
-      <string>Track</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QLineEdit" name="trackTextbox"/>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="durationLabel">
-     <property name="text">
-      <string>Duration</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="durationTextbox"/>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="genreLabel">
-     <property name="text">
-      <string>Genre</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QLineEdit" name="genreTextbox"/>
-   </item>
-   <item row="9" column="1">
-    <spacer name="verticalSpacer_6">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-  </layout>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>465</x>
+     <y>435</y>
+     <width>155</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="songTitleLabel">
+   <property name="geometry">
+    <rect>
+     <x>37</x>
+     <y>37</y>
+     <width>27</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TItle</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="songTitleTextbox">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>30</y>
+     <width>281</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="artistLabel">
+   <property name="geometry">
+    <rect>
+     <x>31</x>
+     <y>72</y>
+     <width>33</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Artist</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="artistTextbox">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>65</y>
+     <width>281</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="albumLabel">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>102</y>
+     <width>39</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Album</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="albumTextbox">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>100</y>
+     <width>281</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="trackLabel">
+   <property name="geometry">
+    <rect>
+     <x>29</x>
+     <y>137</y>
+     <width>35</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Track</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="trackTextbox">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>135</y>
+     <width>281</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="durationLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>172</y>
+     <width>52</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Duration</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="durationTextbox">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>170</y>
+     <width>281</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="genreLabel">
+   <property name="geometry">
+    <rect>
+     <x>27</x>
+     <y>207</y>
+     <width>37</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Genre</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="genreTextbox">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>205</y>
+     <width>281</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="durationErrorLabel">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>174</y>
+     <width>271</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="trackErrorLabel">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>139</y>
+     <width>271</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>

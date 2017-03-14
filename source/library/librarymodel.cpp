@@ -96,7 +96,7 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
             return QVariant();
         }
 
-        const QMap<QString, QString> &metadata = songAt(index.row()).metaData();
+        const QMap<QString, QString> &metadata = songAt(index.row()).getMetadata();
         const QString columnHeader = getColumnHeader(index.column());
 
         // TODO: Change this slightly so that columns can be added/removed.
@@ -147,9 +147,19 @@ void LibraryModel::updateLibrary(QList<Song> newItems)
     }
 
     beginInsertRows(QModelIndex(), rowCount(), newItems.count() + rows - 1);
-    for (const auto &song : newItems) {
-        library.append(song);
-        playlist->addMedia(QUrl::fromLocalFile(song.filePath));
+    for (auto &song : newItems) {
+        bool notInLibrary = true;
+        for (auto &songInLibrary : library) {
+            if (song.filePath == songInLibrary.filePath) {
+                notInLibrary = false;
+                break;
+            }
+        }
+
+        if (notInLibrary) {
+            library.append(song);
+            playlist->addMedia(QUrl::fromLocalFile(song.filePath));
+        }
     }
     endInsertRows();
 
@@ -174,19 +184,36 @@ void LibraryModel::sortByColumn(int column)
     switch (sort) {
     case AToZ:
         std::sort(library.begin(), library.end(),
-                  [column, this](const Song &a, const Song &b){
-                      return a.metaData()[getColumnHeader(column)] < b.metaData()[getColumnHeader(column)];
+                  [column, this](const Song &a, const Song &b)
+                  {
+                      return a.getMetadata()[getColumnHeader(column)] <
+                          b.getMetadata()[getColumnHeader(column)];
                   });
         sort = ZToA;
         break;
     case ZToA:
         std::sort(library.begin(), library.end(),
-                  [column, this](const Song &a, const Song &b){
-                      return a.metaData()[getColumnHeader(column)] > b.metaData()[getColumnHeader(column)];
+                  [column, this](const Song &a, const Song &b)
+                  {
+                      return a.getMetadata()[getColumnHeader(column)] >
+                          b.getMetadata()[getColumnHeader(column)];
                   });
         sort = AToZ;
         break;
     }
 
     emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+void LibraryModel::updateMetadata()
+{
+    Song song(library.at(mightBeUpdated.row()));
+    library.removeAt(mightBeUpdated.row());
+    library.insert(mightBeUpdated.row(), song);
+    emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+void LibraryModel::indexMightBeUpdated(const QModelIndex &index)
+{
+    mightBeUpdated = index;
 }

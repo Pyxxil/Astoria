@@ -3,7 +3,14 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
+
+// Taglib, at least on OSX, throws a couple of deprecated declaration warnings
+// which are annoying to see, and interfere with -Werror. This might not be a
+// good thing to do, but it solves this problem for now.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <fileref.h>
+#pragma GCC diagnostic pop
 
 class TrackInformation;
 class DurationControls;

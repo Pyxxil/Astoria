@@ -50,15 +50,18 @@ public:
     QMediaPlaylist *playlist;
 
     void scanDirectory(QString &directory);
+    void indexMightBeUpdated(const QModelIndex &index);
 
     const QUrl get(int row) const;
 
-    const Song &songAt(int row) const { return library[row]; }
+    const Song &songAt(int row) const
+    { return library[row]; }
 
 public slots:
     void openDirectory();
     void updateLibrary(QList<Song>);
     void sortByColumn(int column);
+    void updateMetadata();
 
 private:
     int rows;
@@ -66,7 +69,8 @@ private:
 
     QList<Song> library;
 
-    enum SortType {
+    enum SortType
+    {
         AToZ,
         ZToA,
     };
@@ -74,6 +78,8 @@ private:
     SortType sort;
     const QString &getColumnHeader(int column) const;
     QList<QString> columnHeaders;
+
+    QModelIndex mightBeUpdated;
 };
 
 

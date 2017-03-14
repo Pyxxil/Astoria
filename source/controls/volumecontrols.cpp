@@ -7,12 +7,12 @@
 #include "includes/controls/sensibleslider.hpp"
 
 VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWidth, int maxWidth)
-    : QWidget(parent)
-      , mutedStatus(mute)
-      , muteIcon(QPixmap(":/icons/Mute.png"))
-      , lowVolumeIcon(QPixmap(":/icons/VolumeLow.png"))
-      , mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png"))
-      , highVolumeIcon(QPixmap(":/icons/VolumeHigh.png"))
+    : QWidget(parent),
+      mutedStatus(mute),
+      muteIcon(QPixmap(":/icons/Mute.png")),
+      lowVolumeIcon(QPixmap(":/icons/VolumeLow.png")),
+      mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png")),
+      highVolumeIcon(QPixmap(":/icons/VolumeHigh.png"))
 {
     muteButton = new QToolButton(this);
     muteButton->setIconSize(QSize(25, 25));
@@ -51,9 +51,11 @@ void VolumeControls::changeVolumeIcon()
 {
     if (volumeSlider->value() > 70) {
         muteButton->setIcon(highVolumeIcon);
-    } else if (volumeSlider->value() > 30) {
+    }
+    else if (volumeSlider->value() > 30) {
         muteButton->setIcon(mediumVolumeIcon);
-    } else {
+    }
+    else {
         muteButton->setIcon(lowVolumeIcon);
     }
 }

@@ -8,6 +8,7 @@ IF ( APPLE )
 	SET ( CMAKE_PREFIX_PATH $ENV{QT5_INSTALL_DIR} )
 	INCLUDE_DIRECTORIES ( "/usr/local/include/taglib" )
 ELSEIF ( UNIX )
+	# This might not be overly portable.
 	INCLUDE_DIRECTORIES ( "/usr/include/taglib" )
 ENDIF ()
 
@@ -59,9 +60,11 @@ SET ( RCC_TARGETS
 SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic" )
 
 IF ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-	SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -pg" )
+	SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -pg -Werror" )
 	SET ( CMAKE_VERBOSE_MAKEFILE ON )
 ELSE ()
+	# This assumes without specifying the build as debug, that it's a
+	# release build
 	SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
 ENDIF ()
 

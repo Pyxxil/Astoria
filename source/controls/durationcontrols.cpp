@@ -8,7 +8,8 @@
 #include "includes/controls/sensibleslider.hpp"
 
 DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
-    : QWidget(parent), duration(0)
+    : QWidget(parent),
+      duration(0)
 {
     setMinimumWidth(minWidth);
     setMaximumWidth(maxWidth);
