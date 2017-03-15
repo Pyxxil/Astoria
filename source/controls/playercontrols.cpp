@@ -10,8 +10,8 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
         : QWidget(parent),
           playerState(state)
 {
-        // Move it closer to the duration control at the bottom of the screen
-        setContentsMargins(0, 0, 0, -20);
+        // Move it closer to the library above it, and the duration control below it
+        setContentsMargins(0, -20, 0, -20);
 
         playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
         playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);

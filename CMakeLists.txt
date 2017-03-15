@@ -37,26 +37,26 @@ SET ( SOURCE_FILES
 	  source/main.cpp
 	  source/delegates/hoverdelegate.cpp
 	  source/delegates/normaldelegate.cpp
-	  )
+	  source/globals.cpp )
 
 SET ( INCLUDE_FILES
-	  includes/controls/durationcontrols.hpp
-	  includes/controls/sensibleslider.hpp
+      includes/controls/durationcontrols.hpp
+      includes/controls/sensibleslider.hpp
       includes/controls/volumecontrols.hpp
-	  includes/controls/playercontrols.hpp
-	  includes/metadataeditordialog.hpp
+      includes/controls/playercontrols.hpp
+      includes/metadataeditordialog.hpp
       includes/library/librarymodel.hpp
       includes/menus/rightclickmenu.hpp
       includes/library/musicscanner.hpp
-	  includes/library/libraryview.hpp
-	  includes/library/playlist.hpp
-	  includes/trackinformation.hpp
-	  includes/delegates/normaldelegate.hpp
-	  includes/menus/menubar.hpp
-	  includes/delegates/hoverdelegate.hpp
+      includes/library/libraryview.hpp
+      includes/library/playlist.hpp
+      includes/trackinformation.hpp
+      includes/delegates/normaldelegate.hpp
+      includes/menus/menubar.hpp
+      includes/delegates/hoverdelegate.hpp
       includes/playerwindow.hpp
-	  includes/library/song.hpp
-	  )
+      includes/library/song.hpp
+      includes/globals.hpp )
 
 SET ( RCC_TARGETS
 	  Icons.qrc

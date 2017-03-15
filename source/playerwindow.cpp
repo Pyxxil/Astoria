@@ -25,9 +25,11 @@
 #include "includes/controls/volumecontrols.hpp"
 #include "includes/library/librarymodel.hpp"
 #include "includes/menus/rightclickmenu.hpp"
+#include "includes/library/libraryview.hpp"
 #include "includes/trackinformation.hpp"
 #include "includes/menus/menubar.hpp"
-#include "includes/library/libraryview.hpp"
+
+#include "includes/globals.hpp"
 
 /**
  * TODO: Possible features
@@ -41,17 +43,17 @@
  *	    - Save state
  *	    - Save library
  *	    - Save playlists
- *	- Edit file metadata
+ *	- Edit file metadata [*]
  *
  * TODO: Fixes
- *  - Fix up UI stuff (This should be pretty much done, in part due to the .qss stylesheet)
+ *  - Fix up UI stuff (Most is done, just got to fix the gap between the cover art and the library)
  *  - Add other tags to columns in the library view (Partly done)
  *  - Fix the Playlist problems (playing next, previous crashes, change playlist set-up)
  *  - Set up a namespace that everything can connect to
  *      - Audio stuff
+ *        - Global media player
  *      - UI stuff
- *  - Now that I've subclassed QTableView, think about moving all logic to do with the
- *    library model into that, instead of here.
+ *        - Width & height perecentages
  */
 
 PlayerWindow::PlayerWindow(QWidget *parent)
@@ -65,7 +67,7 @@ PlayerWindow::PlayerWindow(QWidget *parent)
         QTextStream styles(&styleSheet);
         qApp->setStyleSheet(styles.readAll());
 
-        player = new QMediaPlayer(this);
+        Globals::init();
 
         playerControls = new PlayerControls(this, player->state());
         volumeControls = new VolumeControls(this, player->volume(),
@@ -90,9 +92,10 @@ PlayerWindow::PlayerWindow(QWidget *parent)
         coverArtLabel = new QLabel(this);
         coverArtLabel->setScaledContents(true);
         coverArtLabel->setBackgroundRole(QPalette::Base);
-        coverArtLabel->setMinimumSize(200, 200);
+        coverArtLabel->setContentsMargins(10, 0, 0, 0);
         coverArtLabel->setMaximumSize(200, 200);
-        coverArtLabel->setContentsMargins(0, 0, 0, 0);
+        coverArtLabel->setMinimumSize(200, 200);
+        coverArtLabel->setAlignment(Qt::AlignCenter);
 
         setupConnections();
         setupUI();
@@ -127,7 +130,7 @@ void PlayerWindow::previousSong()
 
 QMediaPlayer::State PlayerWindow::playerState() const
 {
-        if (player==nullptr) {
+        if (player == nullptr) {
                 return QMediaPlayer::StoppedState;
         } else {
                 return player->state();
@@ -270,14 +273,13 @@ void PlayerWindow::setupUI()
         QWidget *controlsWidget = new QWidget(this);
         controlsWidget->setLayout(controlLayout);
         controlsWidget->setMaximumHeight(120);
+        controlsWidget->setContentsMargins(0, 0, 0, 0);
 
         QVBoxLayout *coverArtArea = new QVBoxLayout;
+        coverArtArea->setContentsMargins(0, 0, 0, 0);
         coverArtArea->addStretch(1);
         coverArtArea->addSpacing(1);
         coverArtArea->addWidget(coverArtLabel);
-        coverArtLabel->setContentsMargins(0, 0, 0, 0);
-        coverArtLabel->setMaximumWidth(information->maximumWidth());
-        coverArtArea->setContentsMargins(0, 0, 0, 0);
 
         QHBoxLayout *uiLayout = new QHBoxLayout;
         uiLayout->addLayout(coverArtArea);

@@ -140,30 +140,34 @@ void LibraryModel::updateLibrary(QList<Song> newItems)
             return;
         }
         */
-        if (newItems.length()==0) {
+        if (newItems.length() == 0) {
                 return;
         }
 
-        beginInsertRows(QModelIndex(), rowCount(), newItems.count() + rows - 1);
+        bool altered = false;
+
         for (auto &song : newItems) {
                 bool notInLibrary = true;
                 for (auto &songInLibrary : library) {
-                        if (song.filePath==songInLibrary.filePath) {
+                        if (song.filePath == songInLibrary.filePath) {
                                 notInLibrary = false;
                                 break;
                         }
                 }
 
                 if (notInLibrary) {
+                        beginInsertRows(QModelIndex(), rowCount(), rowCount());
                         library.append(song);
+                        endInsertRows();
+                        ++rows;
                         playlist->addMedia(QUrl::fromLocalFile(song.filePath));
+                        altered = true;
                 }
         }
-        endInsertRows();
 
-        rows += newItems.count();
-
-        emit libraryUpdated();
+        if (altered) {
+                emit libraryUpdated();
+        }
 }
 
 const QUrl LibraryModel::get(int row) const
