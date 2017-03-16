@@ -1,5 +1,5 @@
-#ifndef MUSICPLAYER_NORMALDELEGATE_HPP
-#define MUSICPLAYER_NORMALDELEGATE_HPP
+#ifndef NORMALDELEGATE_HPP
+#define NORMALDELEGATE_HPP
 
 #include <QStyledItemDelegate>
 
@@ -14,4 +14,4 @@ public:
                    const QModelIndex &index) const Q_DECL_OVERRIDE;
 };
 
-#endif //MUSICPLAYER_NORMALDELEGATE_HPP
+#endif // NORMALDELEGATE_HPP

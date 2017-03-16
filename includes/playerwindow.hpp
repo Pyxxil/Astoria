@@ -2,7 +2,6 @@
 #define PLAYERWINDOW_H
 
 #include <QMainWindow>
-#include <QMediaPlayer>
 
 // Taglib, at least on OSX, throws a couple of deprecated declaration warnings
 // which are annoying to see, and interfere with -Werror. This might not be a
@@ -33,13 +32,11 @@ Q_OBJECT
 
 signals:
         void durationChanged(qint64);
-        void informationChanged(QString, QString);
+        void trackInformationChanged(QString, QString);
 
 public:
         explicit PlayerWindow(QWidget *parent = 0);
         ~PlayerWindow();
-
-        QMediaPlayer::State playerState() const;
 
 public slots:
         void nextSong();
@@ -53,7 +50,7 @@ public slots:
 
 private:
         Ui::PlayerWindow *ui;
-        QMediaPlayer *player;
+
         LibraryModel *library;
         DurationControls *durationControls;
         VolumeControls *volumeControls;
@@ -70,6 +67,9 @@ private:
         void setupConnections();
         void setupUI();
         void loadCoverArt(TagLib::FileRef &song);
+
+protected:
+        void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
 };
 
 #endif // PLAYERWINDOW_H

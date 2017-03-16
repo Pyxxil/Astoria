@@ -17,8 +17,7 @@ signals:
         void mute(bool);
 
 public:
-        explicit VolumeControls(QWidget *parent = 0, int volume = 100, bool mute = false,
-                                int minWidth = 16777215, int maxWidth = 16777215);
+        explicit VolumeControls(QWidget *parent = 0, int minWidth = 16777215, int maxWidth = 16777215);
 
         int getVolume() const;
         bool isMuted() const;

@@ -3,12 +3,14 @@
 #include <QToolButton>
 #include <QBoxLayout>
 #include <QAudio>
+#include <QMediaPlayer>
 
 #include "includes/controls/sensibleslider.hpp"
+#include "includes/globals.hpp"
 
-VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWidth, int maxWidth)
+VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
         : QWidget(parent),
-          mutedStatus(mute),
+          mutedStatus(Globals::getAudioInstance()->isMuted()),
           muteIcon(QPixmap(":/icons/Mute.png")),
           lowVolumeIcon(QPixmap(":/icons/VolumeLow.png")),
           mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png")),
@@ -35,18 +37,19 @@ VolumeControls::VolumeControls(QWidget *parent, int volume, bool mute, int minWi
         layout->addWidget(muteButton);
         layout->addWidget(volumeSlider);
         setLayout(layout);
+        setStyleSheet("border: none;");
 
-        setVolume(volume);
+        setVolume(Globals::getAudioInstance()->volume());
 }
 
 int VolumeControls::getVolume() const
 {
         qreal linearVolume = QAudio::convertVolume(
-                volumeSlider->value()/qreal(100),
+                volumeSlider->value() / qreal(100),
                 QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale
         );
 
-        return qRound(linearVolume*100);
+        return qRound(linearVolume * 100);
 }
 
 void VolumeControls::changeVolumeIcon()
@@ -63,12 +66,12 @@ void VolumeControls::changeVolumeIcon()
 void VolumeControls::setVolume(int volume)
 {
         qreal logarithmicVolume = QAudio::convertVolume(
-                volume/qreal(100), QAudio::LinearVolumeScale, QAudio::LogarithmicVolumeScale
+                volume / qreal(100), QAudio::LinearVolumeScale, QAudio::LogarithmicVolumeScale
         );
 
-        volumeSlider->setValue(qRound(logarithmicVolume*100));
+        volumeSlider->setValue(qRound(logarithmicVolume * 100));
 
-        if (volumeSlider->value()==0) {
+        if (volumeSlider->value() == 0) {
                 emit mute(true);
         } else if (isMuted()) {
                 emit mute(false);
@@ -86,7 +89,7 @@ void VolumeControls::volumeSliderValueChanged()
 
 void VolumeControls::setMute(bool mute)
 {
-        if (mute!=mutedStatus) {
+        if (mute != mutedStatus) {
                 mutedStatus = mute;
                 muteButton->setIcon(muteIcon);
         }

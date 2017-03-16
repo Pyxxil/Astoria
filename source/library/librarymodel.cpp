@@ -1,14 +1,14 @@
 #include "includes/library/librarymodel.hpp"
 
 #include <QFileDialog>
+#include <QMediaPlaylist>
 
 #include "includes/library/musicscanner.hpp"
+#include "includes/globals.hpp"
 
 LibraryModel::LibraryModel()
         : rows(0)
 {
-        playlist = new QMediaPlaylist(this);
-
         columnHeaders = {
                 "Artist",
                 "Album",
@@ -44,7 +44,7 @@ LibraryModel::LibraryModel()
 
 LibraryModel::~LibraryModel()
 {
-        delete playlist;
+
 }
 
 bool LibraryModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -66,8 +66,8 @@ int LibraryModel::rowCount(const QModelIndex &parent) const
 
 QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-        if (role==Qt::DisplayRole) {
-                if (orientation==Qt::Horizontal) {
+        if (role == Qt::DisplayRole) {
+                if (orientation == Qt::Horizontal) {
                         // TODO: Change this slightly so that columns can be added/removed.
                         switch (section) {
                         case 0:
@@ -90,8 +90,8 @@ Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const
 QVariant LibraryModel::data(const QModelIndex &index, int role) const
 {
         if (index.isValid()) {
-                if (role==Qt::DisplayRole) {
-                        if (library.length()==0) {
+                if (role == Qt::DisplayRole) {
+                        if (library.length() == 0) {
                                 return QVariant();
                         }
 
@@ -160,7 +160,7 @@ void LibraryModel::updateLibrary(QList<Song> newItems)
                         library.append(song);
                         endInsertRows();
                         ++rows;
-                        playlist->addMedia(QUrl::fromLocalFile(song.filePath));
+                        Globals::getPlaylistInstance()->addMedia(QUrl::fromLocalFile(song.filePath));
                         altered = true;
                 }
         }

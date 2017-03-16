@@ -18,7 +18,7 @@ signals:
         void previous();
 
 public:
-        explicit PlayerControls(QWidget *parent = 0, QMediaPlayer::State state = QMediaPlayer::StoppedState);
+        explicit PlayerControls(QWidget *parent = 0);
 
 public slots:
         void setState(QMediaPlayer::State state);

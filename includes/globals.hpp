@@ -1,12 +1,16 @@
-#ifndef MUSICPLAYER_GLOBALS_HPP
-#define MUSICPLAYER_GLOBALS_HPP
+#ifndef GLOBALS_HPP
+#define GLOBALS_HPP
 
 class QMediaPlayer;
+class QMediaPlaylist;
 
-namespace Globals {
+namespace Globals
+{
         void init();
+        void deInit();
 
-        QMediaPlayer &getAudioInstance();
+        QMediaPlayer *getAudioInstance();
+        QMediaPlaylist *getPlaylistInstance();
 }
 
-#endif //MUSICPLAYER_GLOBALS_HPP
+#endif // GLOBALS_HPP

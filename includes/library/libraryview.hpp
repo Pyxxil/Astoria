@@ -1,5 +1,5 @@
-#ifndef MUSICPLAYER_LIBRARYVIEW_HPP
-#define MUSICPLAYER_LIBRARYVIEW_HPP
+#ifndef LIBRARYVIEW_HPP
+#define LIBRARYVIEW_HPP
 
 #include <QTableView>
 
@@ -23,4 +23,4 @@ private:
         NormalDelegate normalDelegate;
 };
 
-#endif //MUSICPLAYER_LIBRARYVIEW_HPP
+#endif // LIBRARYVIEW_HPP

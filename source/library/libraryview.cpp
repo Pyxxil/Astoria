@@ -7,12 +7,10 @@ LibraryView::LibraryView(QWidget *parent, QAbstractItemModel *library)
 {
         setMouseTracking(true);
 
-        connect(this, SIGNAL(entered(
-                                     const QModelIndex &)),
-                this, SLOT(entry(
-                                   const QModelIndex &)));
+        connect(this, SIGNAL(entered(const QModelIndex &)),
+                this, SLOT(entry(const QModelIndex &)));
 
-        if (library!=nullptr) {
+        if (library != nullptr) {
                 setModel(library);
         }
 
@@ -31,7 +29,7 @@ LibraryView::LibraryView(QWidget *parent, QAbstractItemModel *library)
 
 void LibraryView::entry(const QModelIndex &index)
 {
-        if (currentIndex!=-1) {
+        if (currentIndex != -1) {
                 setDelegate(currentIndex, false);
         }
 

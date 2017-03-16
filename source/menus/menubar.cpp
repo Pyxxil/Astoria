@@ -4,6 +4,8 @@
 
 #include "includes/playerwindow.hpp"
 
+#include "includes/globals.hpp"
+
 MenuBar::MenuBar(PlayerWindow *parent)
         : parent(parent)
 {
@@ -68,7 +70,7 @@ void MenuBar::connectActions()
 void MenuBar::playOrPause()
 {
         // TODO: Change this, it's a bad way to do what I want.
-        if (parent->playerState()==QMediaPlayer::PlayingState) {
+        if (Globals::getAudioInstance()->state() == QMediaPlayer::PlayingState) {
                 emit pause();
         } else {
                 emit play();
@@ -77,7 +79,7 @@ void MenuBar::playOrPause()
 
 void MenuBar::playPauseChangeText(QMediaPlayer::State state)
 {
-        if (state==QMediaPlayer::PlayingState) {
+        if (state == QMediaPlayer::PlayingState) {
                 playPause->setText("Pause");
         } else {
                 playPause->setText("Play");

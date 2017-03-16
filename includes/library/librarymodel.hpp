@@ -47,8 +47,6 @@ public:
 
         Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
-        QMediaPlaylist *playlist;
-
         void scanDirectory(QString &directory);
         void indexMightBeUpdated(const QModelIndex &index);
 
@@ -80,8 +78,6 @@ private:
         QList<QString> columnHeaders;
 
         QModelIndex mightBeUpdated;
-
-        int current = -1;
 };
 
 #endif //LIBRARY_HPP

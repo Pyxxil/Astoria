@@ -1,5 +1,5 @@
-#ifndef MUSICPLAYER_HOVERDELEGATE_HPP
-#define MUSICPLAYER_HOVERDELEGATE_HPP
+#ifndef HOVERDELEGATE_HPP
+#define HOVERDELEGATE_HPP
 
 #include <QStyledItemDelegate>
 
@@ -15,4 +15,4 @@ public:
                    const QModelIndex &index) const Q_DECL_OVERRIDE;
 };
 
-#endif //MUSICPLAYER_HOVERDELEGATE_HPP
+#endif // HOVERDELEGATE_HPP

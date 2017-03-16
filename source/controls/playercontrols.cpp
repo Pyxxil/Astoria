@@ -3,15 +3,18 @@
 #include <QToolButton>
 #include <QBoxLayout>
 
+#include "includes/globals.hpp"
+
 static constexpr int iconWidth = 20;
 static constexpr int iconHeight = 20;
 
-PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
+PlayerControls::PlayerControls(QWidget *parent)
         : QWidget(parent),
-          playerState(state)
+          playerState(Globals::getAudioInstance()->state())
 {
         // Move it closer to the library above it, and the duration control below it
         setContentsMargins(0, -20, 0, -20);
+        setStyleSheet("border: none;");
 
         playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
         playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
@@ -30,8 +33,8 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
 
         playPauseButton = new QToolButton(this);
         playPauseButton->setIcon(playPauseIcon);
-        playPauseButton->setIconSize(QSize(static_cast<int>(iconWidth*1.5),
-                                           static_cast<int>(iconHeight*1.5)));
+        playPauseButton->setIconSize(QSize(static_cast<int>(iconWidth * 1.5),
+                                           static_cast<int>(iconHeight * 1.5)));
         playPauseButton->setCheckable(true);
         playPauseButton->setChecked(true);
         playPauseButton->setShortcut(Qt::Key_Space);
@@ -70,7 +73,7 @@ PlayerControls::PlayerControls(QWidget *parent, QMediaPlayer::State state)
 
 void PlayerControls::setState(QMediaPlayer::State state)
 {
-        if (state!=playerState) {
+        if (state != playerState) {
                 playerState = state;
 
                 switch (state) {

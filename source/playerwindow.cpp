@@ -31,7 +31,7 @@
 
 #include "includes/globals.hpp"
 
-/**
+/*
  * TODO: Possible features
  * To add features list
  *	- Allow the stylesheet to be read from a file (.qss file) (This is sort of done already)
@@ -54,6 +54,9 @@
  *        - Global media player
  *      - UI stuff
  *        - Width & height perecentages
+ *  - Catch the window closing to do the following:
+ *      - Saving
+ *      - De-initialising items in the global namespace
  */
 
 PlayerWindow::PlayerWindow(QWidget *parent)
@@ -69,16 +72,15 @@ PlayerWindow::PlayerWindow(QWidget *parent)
 
         Globals::init();
 
-        playerControls = new PlayerControls(this, player->state());
-        volumeControls = new VolumeControls(this, player->volume(),
-                                            player->isMuted(), 150, 150);
+        playerControls = new PlayerControls(this);
+        volumeControls = new VolumeControls(this, 150, 150);
         volumeControls->setContentsMargins(0, 0, 5, 0);
         durationControls = new DurationControls(this, 200);
 
         library = new LibraryModel;
         libraryView = new LibraryView(this, library);
 
-        player->setPlaylist(library->playlist);
+        //player->setPlaylist(library->playlist);
 
         menu = new MenuBar(this);
         for (const auto &_menu : menu->getAllMenus()) {
@@ -108,19 +110,22 @@ PlayerWindow::~PlayerWindow()
 
 void PlayerWindow::nextSong()
 {
-        if (!player->playlist()->isEmpty()) {
-                player->playlist()->next();
+        if (!Globals::getAudioInstance()->playlist()->isEmpty()) {
+                Globals::getAudioInstance()->playlist()->next();
         }
 }
 
-/**
- * Go to the previous song, unless the time played into the current song is less than 10 seconds.
+/*
+ * Go to the previous song, unless the time played into the current song is
+ * less than 10 seconds.
  */
+
 void PlayerWindow::previousSong()
 {
         // TODO: Make the time to go to the previous song adjustable
         // TODO: What to do if the user has pressed go to previous and there aren't any songs
         // TODO: before it? Do we set position to 0, and pause the media? Or just reset the song?
+        QMediaPlayer *player = Globals::getAudioInstance();
         if (player->position() < 10000 && player->playlist()->currentIndex() > 0) {
                 player->playlist()->previous();
         } else {
@@ -128,46 +133,53 @@ void PlayerWindow::previousSong()
         }
 }
 
-QMediaPlayer::State PlayerWindow::playerState() const
-{
-        if (player == nullptr) {
-                return QMediaPlayer::StoppedState;
-        } else {
-                return player->state();
-        }
-}
-
 void PlayerWindow::timeSeek(int time)
 {
-        player->setPosition(time);
+        Globals::getAudioInstance()->setPosition(time);
 }
+
+/*
+ * In general, whenever the metadata updates, we want to update a few things:
+ *      - The duration displayed by the duration controls
+ *              - Either a new song is being played, and the duration is different than the previous
+ *              - Or metadata has been edited to provide a new duration.
+ *      - The window title, as this displays the current playing song
+ *      - The information displayed below the cover art, and to the left of the controls.
+ *      - We also want to update the cover art.
+ */
 
 void PlayerWindow::metaDataChanged()
 {
-        emit durationChanged(player->duration());
-        TagLib::FileRef song(player->currentMedia().canonicalUrl().toString().remove(0, 7).toStdString().c_str());
+        emit durationChanged(Globals::getAudioInstance()->duration());
+        TagLib::FileRef song
+                (Globals::getAudioInstance()->currentMedia()
+                                            .canonicalUrl()
+                                            .toString()
+                                            .remove(0, 7) // Remove the file:// prefix
+                                            .toStdString()
+                                            .c_str());
         setWindowTitle(QString("%1 - %2")
                                .arg(TStringToQString(song.tag()->artist()))
                                .arg(TStringToQString(song.tag()->title())));
-        emit informationChanged(TStringToQString(song.tag()->artist()),
-                                TStringToQString(song.tag()->title()));
+        emit trackInformationChanged(TStringToQString(song.tag()->artist()),
+                                     TStringToQString(song.tag()->title()));
 
         loadCoverArt(song);
 }
 
 void PlayerWindow::play()
 {
-        if (!library->playlist->isEmpty()) {
-                emit player->play();
+        if (!Globals::getPlaylistInstance()->isEmpty()) {
+                emit Globals::getAudioInstance()->play();
         }
 }
 
 void PlayerWindow::playNow()
 {
         // TODO: Fix this.
-        player->playlist()->insertMedia(0, library->get(libraryView->currentIndex().row()));
-        player->playlist()->setCurrentIndex(0);
-        emit player->play();
+        Globals::getPlaylistInstance()->insertMedia(0, library->get(libraryView->currentIndex().row()));
+        Globals::getPlaylistInstance()->setCurrentIndex(0);
+        emit Globals::getAudioInstance()->play();
 }
 
 void PlayerWindow::customMenuRequested(QPoint pos)
@@ -186,6 +198,8 @@ void PlayerWindow::updatePlaylist()
 
 void PlayerWindow::setupConnections()
 {
+        QMediaPlayer *player = Globals::getAudioInstance();
+
         connect(playerControls, SIGNAL(play()),
                 this, SLOT(play()));
         connect(playerControls, SIGNAL(pause()),
@@ -230,7 +244,7 @@ void PlayerWindow::setupConnections()
         connect(library, SIGNAL(libraryUpdated()),
                 this, SLOT(updatePlaylist()));
 
-        connect(this, SIGNAL(informationChanged(QString, QString)),
+        connect(this, SIGNAL(trackInformationChanged(QString, QString)),
                 information, SLOT(updateLabels(QString, QString)));
         connect(this, SIGNAL(durationChanged(qint64)),
                 durationControls, SLOT(songChanged(qint64)));
@@ -274,6 +288,7 @@ void PlayerWindow::setupUI()
         controlsWidget->setLayout(controlLayout);
         controlsWidget->setMaximumHeight(120);
         controlsWidget->setContentsMargins(0, 0, 0, 0);
+        controlsWidget->setStyleSheet("border: none;");
 
         QVBoxLayout *coverArtArea = new QVBoxLayout;
         coverArtArea->setContentsMargins(0, 0, 0, 0);
@@ -301,7 +316,7 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 
         bool coverArtNotFound = true;
 
-        if (codec.name()=="audio/mp4") {
+        if (codec.name() == "audio/mp4") {
                 TagLib::MP4::File mp4(song.file()->name());
                 TagLib::MP4::CoverArtList coverArtList =
                         mp4.tag()->itemListMap()["covr"].toCoverArtList();
@@ -312,7 +327,7 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
                                            coverArt.data().size());
                         coverArtNotFound = false;
                 }
-        } else if (codec.name()=="audio/mpeg") {
+        } else if (codec.name() == "audio/mpeg") {
                 TagLib::MPEG::File file(song.file()->name());
                 TagLib::ID3v2::FrameList frameList = file.ID3v2Tag()->frameList("APIC");
 
@@ -331,4 +346,10 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
         }
 
         coverArtLabel->setPixmap(QPixmap::fromImage(image));
+}
+
+void PlayerWindow::closeEvent(QCloseEvent *event)
+{
+        Globals::deInit();
+        QMainWindow::closeEvent(event);
 }

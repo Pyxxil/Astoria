@@ -1,5 +1,5 @@
-#ifndef MUSICPLAYER_TRACKINFORMATION_HPP
-#define MUSICPLAYER_TRACKINFORMATION_HPP
+#ifndef TRACKINFORMATION_HPP
+#define TRACKINFORMATION_HPP
 
 #include <QWidget>
 #include <QLabel>
@@ -19,4 +19,4 @@ private:
         QLabel *artistLabel;
 };
 
-#endif //MUSICPLAYER_TRACKINFORMATION_HPP
+#endif // TRACKINFORMATION_HPP
