@@ -30,7 +30,7 @@ public slots:
 
 private:
         bool mutedStatus;
-        QAbstractButton *muteButton;
+        QAbstractButton *volumeIndicatorButton;
         SensibleSlider *volumeSlider;
 
         QIcon muteIcon;

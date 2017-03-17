@@ -3,6 +3,7 @@
 
 class QMediaPlayer;
 class QMediaPlaylist;
+class QUrl;
 
 namespace Globals
 {
@@ -11,6 +12,8 @@ namespace Globals
 
         QMediaPlayer *getAudioInstance();
         QMediaPlaylist *getPlaylistInstance();
+
+        QUrl getCurrentSong();
 }
 
 #endif // GLOBALS_HPP

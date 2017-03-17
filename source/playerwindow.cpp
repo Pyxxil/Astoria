@@ -80,8 +80,6 @@ PlayerWindow::PlayerWindow(QWidget *parent)
         library = new LibraryModel;
         libraryView = new LibraryView(this, library);
 
-        //player->setPlaylist(library->playlist);
-
         menu = new MenuBar(this);
         for (const auto &_menu : menu->getAllMenus()) {
                 ui->menuBar->addMenu(_menu);
@@ -151,13 +149,13 @@ void PlayerWindow::timeSeek(int time)
 void PlayerWindow::metaDataChanged()
 {
         emit durationChanged(Globals::getAudioInstance()->duration());
-        TagLib::FileRef song
-                (Globals::getAudioInstance()->currentMedia()
-                                            .canonicalUrl()
-                                            .toString()
-                                            .remove(0, 7) // Remove the file:// prefix
-                                            .toStdString()
-                                            .c_str());
+        TagLib::FileRef song(
+                QStringToTString(
+                        Globals::getCurrentSong()
+                                .toString()
+                                .remove(0, 7))  // Remove the file:// prefix
+                        .toCString());
+
         setWindowTitle(QString("%1 - %2")
                                .arg(TStringToQString(song.tag()->artist()))
                                .arg(TStringToQString(song.tag()->title())));
@@ -198,6 +196,7 @@ void PlayerWindow::updatePlaylist()
 
 void PlayerWindow::setupConnections()
 {
+        // TODO: Think about moving some of these into their respective classes
         QMediaPlayer *player = Globals::getAudioInstance();
 
         connect(playerControls, SIGNAL(play()),
@@ -253,8 +252,7 @@ void PlayerWindow::setupConnections()
                 this, SLOT(customMenuRequested(QPoint)));
         connect(libraryView->horizontalHeader(), SIGNAL(sectionClicked(int)),
                 library, SLOT(sortByColumn(int)));
-        connect(libraryView, SIGNAL(doubleClicked(
-                                            const QModelIndex &)),
+        connect(libraryView, SIGNAL(doubleClicked(const QModelIndex &)),
                 this, SLOT(playNow()));
 
         connect(rightClickMenu, SIGNAL(playThisNow()),

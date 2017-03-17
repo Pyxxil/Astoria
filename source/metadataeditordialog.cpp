@@ -4,11 +4,6 @@
 #include <QPushButton>
 #include <QDebug>
 
-// TODO: Maybe change it to check for saving while in the slot's,
-// TODO: this way there aren't any checks after saving, and the save
-// TODO: button can stay/be disabled if the string in the text box
-// TODO: is the same as the string already in the metadata.
-
 MetadataEditorDialog::MetadataEditorDialog(QWidget *parent)
         : QDialog(parent),
           ui(new Ui::MetadataEditorDialog),
@@ -30,39 +25,27 @@ void MetadataEditorDialog::setupMetadata(Song &song)
         ui->artistTextbox->setText(metadata["Artist"]);
         ui->albumTextbox->setText(metadata["Album"]);
         ui->trackTextbox->setText(metadata["Track"]);
-        ui->durationTextbox->setText(metadata["Duration"]);
         ui->genreTextbox->setText(metadata["Genre"]);
+        ui->yearTextbox->setText(metadata["Year"]);
 
-        ui->durationErrorLabel->setStyleSheet("color: red");
         ui->trackErrorLabel->setStyleSheet("color: red");
+        ui->yearErrorLabel->setStyleSheet("color: red");
 
         saveButton = ui->buttonBox->button(QDialogButtonBox::Save);
         saveButton->setEnabled(false);
 
-        connect(ui->trackTextbox, SIGNAL(textChanged(
-                                                 const QString &)),
-                this, SLOT(trackTextChanged(
-                                   const QString &)));
-        connect(ui->albumTextbox, SIGNAL(textChanged(
-                                                 const QString &)),
-                this, SLOT(albumTextChanged(
-                                   const QString &)));
-        connect(ui->artistTextbox, SIGNAL(textChanged(
-                                                  const QString &)),
-                this, SLOT(artistTextChanged(
-                                   const QString &)));
-        connect(ui->durationTextbox, SIGNAL(textChanged(
-                                                    const QString &)),
-                this, SLOT(durationTextChanged(
-                                   const QString &)));
-        connect(ui->genreTextbox, SIGNAL(textChanged(
-                                                 const QString &)),
-                this, SLOT(genreTextChanged(
-                                   const QString &)));
-        connect(ui->songTitleTextbox, SIGNAL(textChanged(
-                                                     const QString &)),
-                this, SLOT(songTitleTextChanged(
-                                   const QString &)));
+        connect(ui->trackTextbox, SIGNAL(textChanged(const QString &)),
+                this, SLOT(trackTextChanged(const QString &)));
+        connect(ui->albumTextbox, SIGNAL(textChanged(const QString &)),
+                this, SLOT(albumTextChanged(const QString &)));
+        connect(ui->artistTextbox, SIGNAL(textChanged(const QString &)),
+                this, SLOT(artistTextChanged(const QString &)));
+        connect(ui->genreTextbox, SIGNAL(textChanged(const QString &)),
+                this, SLOT(genreTextChanged(const QString &)));
+        connect(ui->songTitleTextbox, SIGNAL(textChanged(const QString &)),
+                this, SLOT(songTitleTextChanged(const QString &)));
+        connect(ui->yearTextbox, SIGNAL(textChanged(const QString &)),
+                this, SLOT(yearTextChanged(const QString &)));
 
         connect(this, SIGNAL(accepted()),
                 this, SLOT(save()));
@@ -70,9 +53,11 @@ void MetadataEditorDialog::setupMetadata(Song &song)
 
 void MetadataEditorDialog::albumTextChanged(const QString &)
 {
-        if (ui->albumTextbox->text()==metadata["Album"]) {
+        if (ui->albumTextbox->text() == metadata["Album"]) {
                 edits ^= AlbumText;
-                saveButton->setEnabled(edits > 0);
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
                 return;
         }
 
@@ -85,25 +70,23 @@ void MetadataEditorDialog::albumTextChanged(const QString &)
 void MetadataEditorDialog::trackTextChanged(const QString &newText)
 {
         bool converted = false;
-        qDebug() << newText;
 
-        if (newText==0) {
-                ui->trackErrorLabel->setText("Invalid track number");
+        if (newText == metadata["Track"]) {
                 edits ^= TrackText;
-                return;
-        }
-
-        if (newText==metadata["Track"]) {
-                edits ^= TrackText;
-                saveButton->setEnabled(edits > 0);
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
                 ui->trackErrorLabel->setText("");
                 return;
         }
 
-        newText.toInt(&converted);
+        newText.toUInt(&converted);
         if (!converted) {
                 ui->trackErrorLabel->setText("Invalid track number");
                 edits ^= TrackText;
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
                 return;
         }
 
@@ -117,9 +100,11 @@ void MetadataEditorDialog::trackTextChanged(const QString &newText)
 
 void MetadataEditorDialog::artistTextChanged(const QString &newText)
 {
-        if (newText==metadata["Artist"]) {
+        if (newText == metadata["Artist"]) {
                 edits ^= ArtistText;
-                saveButton->setEnabled(edits > 0);
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
                 return;
         }
 
@@ -129,47 +114,13 @@ void MetadataEditorDialog::artistTextChanged(const QString &newText)
         }
 }
 
-void MetadataEditorDialog::durationTextChanged(const QString &newText)
-{
-        bool minutesConverted = false;
-        bool secondsConverted = false;
-
-        if (newText==metadata["Duration"]) {
-                edits ^= DurationText;
-                saveButton->setEnabled(edits > 0);
-                ui->durationErrorLabel->setText("");
-                return;
-        }
-
-        QStringList time = newText.split(':');
-        if (time.length()!=2) {
-                ui->durationErrorLabel->setText("Invalid duration");
-                edits ^= DurationText;
-                return;
-        }
-
-        (void) time[0].toInt(&minutesConverted);
-        (void) time[1].toInt(&secondsConverted);
-
-        if (!(minutesConverted && secondsConverted)) {
-                ui->durationErrorLabel->setText("Invalid duration");
-                edits ^= DurationText;
-                return;
-        }
-
-        ui->durationErrorLabel->setText("");
-
-        edits |= DurationText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
-}
-
 void MetadataEditorDialog::genreTextChanged(const QString &newText)
 {
-        if (newText==metadata["Genre"]) {
+        if (newText == metadata["Genre"]) {
                 edits ^= GenreText;
-                saveButton->setEnabled(edits > 0);
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
                 return;
         }
 
@@ -181,9 +132,11 @@ void MetadataEditorDialog::genreTextChanged(const QString &newText)
 
 void MetadataEditorDialog::songTitleTextChanged(const QString &newText)
 {
-        if (newText==metadata["Title"]) {
+        if (newText == metadata["Title"]) {
                 edits ^= TitleText;
-                saveButton->setEnabled(edits > 0);
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
                 return;
         }
 
@@ -193,49 +146,73 @@ void MetadataEditorDialog::songTitleTextChanged(const QString &newText)
         }
 }
 
+void MetadataEditorDialog::yearTextChanged(const QString &newText)
+{
+        bool converted = false;
+
+        if (newText == metadata["Year"]) {
+                edits ^= YearText;
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
+                return;
+        }
+
+        newText.toUInt(&converted);
+        if (!converted) {
+                ui->yearErrorLabel->setText("Invalid year");
+                edits ^= YearText;
+                if (edits == 0) {
+                        saveButton->setEnabled(false);
+                }
+                return;
+        }
+
+        ui->yearErrorLabel->setText("");
+        edits |= YearText;
+        if (!saveButton->isEnabled()) {
+                saveButton->setEnabled(true);
+        }
+}
+
+/*
+ * Save any changed data to disk, and update the library.
+ */
+
 void MetadataEditorDialog::save()
 {
-        // TODO: this probably isn't really scalable.
+        if (edits == 0) {
+                // This should always evaluate to false, but it's being kept
+                // in as a fail safe.
+                return;
+        }
+
         TagLib::FileRef songFile(file.toStdString().c_str());
 
         if (edits & ArtistText) {
-                if (ui->artistTextbox->text()!=metadata["Artist"]) {
-                        songFile.tag()->setArtist(ui->artistTextbox->text().toStdString().c_str());
-                }
+                songFile.tag()->setArtist(QStringToTString(ui->artistTextbox->text()));
         }
 
         if (edits & AlbumText) {
-                if (ui->albumTextbox->text()!=metadata["Album"]) {
-                        songFile.tag()->setAlbum(ui->albumTextbox->text().toStdString().c_str());
-                }
+                songFile.tag()->setAlbum(QStringToTString(ui->albumTextbox->text()));
         }
 
         if (edits & TrackText) {
-                if (ui->trackTextbox->text()!=metadata["Track"]) {
-
-                }
-        }
-
-        if (edits & DurationText) {
-                if (ui->durationTextbox->text()!=metadata["Duration"]) {
-
-                }
+                songFile.tag()->setTrack(ui->trackTextbox->text().toUInt());
         }
 
         if (edits & GenreText) {
-                if (ui->genreTextbox->text()!=metadata["Genre"]) {
-
-                }
+                songFile.tag()->setGenre(QStringToTString(ui->genreTextbox->text()));
         }
 
         if (edits & TitleText) {
-                if (ui->songTitleTextbox->text()!=metadata["Title"]) {
-
-                }
+                songFile.tag()->setTitle(QStringToTString(ui->songTitleTextbox->text()));
         }
 
-        if (edits) {
-                songFile.save();
-                emit libraryNeedsUpdating();
+        if (edits & YearText) {
+                songFile.tag()->setYear(ui->yearTextbox->text().toUInt());
         }
+
+        songFile.save();
+        emit libraryNeedsUpdating();
 }

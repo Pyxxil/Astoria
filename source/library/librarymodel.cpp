@@ -1,7 +1,7 @@
 #include "includes/library/librarymodel.hpp"
 
 #include <QFileDialog>
-#include <QMediaPlaylist>
+#include <QMediaPlayer>
 
 #include "includes/library/musicscanner.hpp"
 #include "includes/globals.hpp"
@@ -32,10 +32,10 @@ LibraryModel::LibraryModel()
                 "*.sd2",
                 "*.wav",
 #if defined(Q_OS_LINUX)
-        "*.wma",
-        "*.flv",
-        "*.ogg",
-        "*.flac"
+                "*.wma",
+                "*.flv",
+                "*.ogg",
+                "*.flac"
 #endif
         };
 
@@ -131,15 +131,6 @@ void LibraryModel::scanDirectory(QString &directory)
 
 void LibraryModel::updateLibrary(QList<Song> newItems)
 {
-        /*
-        if (library.count() == rows) {
-            // TODO: Read below
-            // There's no point in updating the library if it's still the same number of items
-            // Then again, what if some were removed at the same time ... ? Without it, however,
-            // it segfaults, so for now it stays.
-            return;
-        }
-        */
         if (newItems.length() == 0) {
                 return;
         }
@@ -182,22 +173,23 @@ const QString &LibraryModel::getColumnHeader(int column) const
 
 void LibraryModel::sortByColumn(int column)
 {
-
         switch (sort) {
         case AToZ:
                 std::sort(library.begin(), library.end(),
-                          [column, this](const Song &a, const Song &b) {
+                          [column, this](const Song &a, const Song &b) -> bool {
                                   return a.getMetadata()[getColumnHeader(column)] <
                                           b.getMetadata()[getColumnHeader(column)];
-                          });
+                          }
+                );
                 sort = ZToA;
                 break;
         case ZToA:
                 std::sort(library.begin(), library.end(),
-                          [column, this](const Song &a, const Song &b) {
+                          [column, this](const Song &a, const Song &b) -> bool {
                                   return a.getMetadata()[getColumnHeader(column)] >
                                           b.getMetadata()[getColumnHeader(column)];
-                          });
+                          }
+                );
                 sort = AToZ;
                 break;
         }
@@ -205,12 +197,26 @@ void LibraryModel::sortByColumn(int column)
         emit dataChanged(QModelIndex(), QModelIndex());
 }
 
+/*
+ * If the user decides to update the metadata of a file, we need to reflect the change
+ * in the library, as well as anything connected to the current media, assuming the file
+ * edited was the current playing song.
+ */
 void LibraryModel::updateMetadata()
 {
         Song song(library.at(mightBeUpdated.row()));
         library.removeAt(mightBeUpdated.row());
         library.insert(mightBeUpdated.row(), song);
         emit dataChanged(QModelIndex(), QModelIndex());
+
+        if (library.at(mightBeUpdated.row()).filePath == Globals::getCurrentSong().toString().remove(0, 7)) {
+                /* The current song was edited, so we need to update the following:
+                 *      - Duration
+                 *      - Window Title
+                 *      - Track Information
+                 */
+                emit Globals::getAudioInstance()->metaDataChanged();
+        }
 }
 
 void LibraryModel::indexMightBeUpdated(const QModelIndex &index)

@@ -13,7 +13,7 @@ PlayerControls::PlayerControls(QWidget *parent)
           playerState(Globals::getAudioInstance()->state())
 {
         // Move it closer to the library above it, and the duration control below it
-        setContentsMargins(0, -20, 0, -20);
+        setContentsMargins(0, -20, 0, -10);
         setStyleSheet("border: none;");
 
         playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
@@ -77,10 +77,12 @@ void PlayerControls::setState(QMediaPlayer::State state)
                 playerState = state;
 
                 switch (state) {
-                case QMediaPlayer::PlayingState:playPauseButton->setChecked(false);
+                case QMediaPlayer::PlayingState:
+                        playPauseButton->setChecked(false);
                         break;
                 case QMediaPlayer::PausedState:
-                case QMediaPlayer::StoppedState:playPauseButton->setChecked(true);
+                case QMediaPlayer::StoppedState:
+                        playPauseButton->setChecked(true);
                         break;
                 }
         }

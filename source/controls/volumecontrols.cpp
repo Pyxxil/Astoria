@@ -16,9 +16,9 @@ VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
           mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png")),
           highVolumeIcon(QPixmap(":/icons/VolumeHigh.png"))
 {
-        muteButton = new QToolButton(this);
-        muteButton->setIconSize(QSize(25, 25));
-        connect(muteButton, SIGNAL(clicked()),
+        volumeIndicatorButton = new QToolButton(this);
+        volumeIndicatorButton->setIconSize(QSize(25, 25));
+        connect(volumeIndicatorButton, SIGNAL(clicked()),
                 this, SLOT(muteButtonClicked()));
 
         volumeSlider = new SensibleSlider(this);
@@ -34,10 +34,9 @@ VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
 
         layout = new QHBoxLayout(this);
         layout->setMargin(0);
-        layout->addWidget(muteButton);
+        layout->addWidget(volumeIndicatorButton);
         layout->addWidget(volumeSlider);
         setLayout(layout);
-        setStyleSheet("border: none;");
 
         setVolume(Globals::getAudioInstance()->volume());
 }
@@ -54,12 +53,17 @@ int VolumeControls::getVolume() const
 
 void VolumeControls::changeVolumeIcon()
 {
+        if (isMuted()) {
+                volumeIndicatorButton->setIcon(muteIcon);
+                return;
+        }
+
         if (volumeSlider->value() > 70) {
-                muteButton->setIcon(highVolumeIcon);
+                volumeIndicatorButton->setIcon(highVolumeIcon);
         } else if (volumeSlider->value() > 30) {
-                muteButton->setIcon(mediumVolumeIcon);
+                volumeIndicatorButton->setIcon(mediumVolumeIcon);
         } else {
-                muteButton->setIcon(lowVolumeIcon);
+                volumeIndicatorButton->setIcon(lowVolumeIcon);
         }
 }
 
@@ -77,9 +81,7 @@ void VolumeControls::setVolume(int volume)
                 emit mute(false);
         }
 
-        if (!isMuted()) {
-                changeVolumeIcon();
-        }
+        changeVolumeIcon();
 }
 
 void VolumeControls::volumeSliderValueChanged()
@@ -91,7 +93,7 @@ void VolumeControls::setMute(bool mute)
 {
         if (mute != mutedStatus) {
                 mutedStatus = mute;
-                muteButton->setIcon(muteIcon);
+                changeVolumeIcon();
         }
 }
 

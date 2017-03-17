@@ -12,7 +12,7 @@ DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
           duration(0)
 {
         // Move it closer to the player controls above it
-        setContentsMargins(0, -15, 0, 0);
+        setContentsMargins(0, -10, 0, 0);
         setMinimumWidth(minWidth);
         setMaximumWidth(maxWidth);
         setMaximumHeight(35);

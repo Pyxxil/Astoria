@@ -2,6 +2,7 @@
 
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include <QUrl>
 
 /*
  * TODO: Seperate this into multiple files, e.g.
@@ -111,4 +112,9 @@ QMediaPlayer *Globals::getAudioInstance()
 QMediaPlaylist *Globals::getPlaylistInstance()
 {
         return Playlist::playlist;
+}
+
+QUrl Globals::getCurrentSong()
+{
+        return getAudioInstance()->currentMedia().canonicalUrl();
 }

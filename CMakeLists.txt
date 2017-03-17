@@ -37,7 +37,8 @@ SET ( SOURCE_FILES
 	  source/main.cpp
 	  source/delegates/hoverdelegate.cpp
 	  source/delegates/normaldelegate.cpp
-	  source/globals.cpp )
+	  source/globals.cpp
+	  )
 
 SET ( INCLUDE_FILES
       includes/controls/durationcontrols.hpp
@@ -56,7 +57,8 @@ SET ( INCLUDE_FILES
       includes/delegates/hoverdelegate.hpp
       includes/playerwindow.hpp
       includes/library/song.hpp
-      includes/globals.hpp )
+      includes/globals.hpp
+	  )
 
 SET ( RCC_TARGETS
 	  Icons.qrc

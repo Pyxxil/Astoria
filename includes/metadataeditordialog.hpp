@@ -27,9 +27,9 @@ public slots:
         void albumTextChanged(const QString &);
         void trackTextChanged(const QString &);
         void artistTextChanged(const QString &);
-        void durationTextChanged(const QString &);
         void genreTextChanged(const QString &);
         void songTitleTextChanged(const QString &);
+        void yearTextChanged(const QString &);
         void save();
 
 private:
@@ -40,9 +40,9 @@ private:
                 ArtistText = 1 << 0,
                 AlbumText = 1 << 1,
                 TrackText = 1 << 2,
-                DurationText = 1 << 3,
-                GenreText = 1 << 4,
-                TitleText = 1 << 5,
+                GenreText = 1 << 3,
+                TitleText = 1 << 4,
+                YearText = 1 << 5,
         };
 
         quint16 edits;
