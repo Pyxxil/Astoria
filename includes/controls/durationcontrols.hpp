@@ -14,7 +14,7 @@ signals:
         void seek(int);
 
 public:
-        DurationControls(QWidget *parent = 0, int minWidth = 16777215, int maxWidth = 16777215);
+        explicit DurationControls(QWidget *parent = 0, int minWidth = 16777215, int maxWidth = 16777215);
 
         SensibleSlider *durationSlider;
         QLabel *currentTime;

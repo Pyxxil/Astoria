@@ -8,7 +8,7 @@ class HoverDelegate : public QStyledItemDelegate
 Q_OBJECT
 
 public:
-        HoverDelegate();
+        explicit HoverDelegate();
 
         void paint(QPainter *painter,
                    const QStyleOptionViewItem &option,

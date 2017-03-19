@@ -8,7 +8,7 @@
 // good thing to do, but it solves this problem for now.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <fileref.h>
+#include "fileref.h"
 #pragma GCC diagnostic pop
 
 class TrackInformation;

@@ -70,7 +70,8 @@ void VolumeControls::changeVolumeIcon()
 void VolumeControls::setVolume(int volume)
 {
         qreal logarithmicVolume = QAudio::convertVolume(
-                volume / qreal(100), QAudio::LinearVolumeScale, QAudio::LogarithmicVolumeScale
+                volume / qreal(100), QAudio::LinearVolumeScale,
+                QAudio::LogarithmicVolumeScale
         );
 
         volumeSlider->setValue(qRound(logarithmicVolume * 100));

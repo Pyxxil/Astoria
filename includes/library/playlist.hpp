@@ -8,7 +8,7 @@ class Playlist : public QMediaPlaylist
 Q_OBJECT
 
 public:
-        Playlist();
+        explicit Playlist();
 
         void next();
         void previous();

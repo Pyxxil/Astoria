@@ -6,10 +6,10 @@ IF ( APPLE )
 	# This isn't exactly perfect, but it would make it so the user can define
 	# their own qt5 installation directory.
 	SET ( CMAKE_PREFIX_PATH $ENV{QT5_INSTALL_DIR} )
-	INCLUDE_DIRECTORIES ( "/usr/local/include/taglib" )
+	#INCLUDE_DIRECTORIES ( "/usr/local/include/taglib" )
 ELSEIF ( UNIX )
 	# This might not be overly portable.
-	INCLUDE_DIRECTORIES ( "/usr/include/taglib" )
+	#INCLUDE_DIRECTORIES ( "/usr/include/taglib" )
 ENDIF ()
 
 SET ( CMAKE_CXX_STANDARD 14 )
@@ -60,6 +60,8 @@ SET ( INCLUDE_FILES
       includes/globals.hpp
 	  )
 
+INCLUDE_DIRECTORIES ( ${CMAKE_SOURCE_DIR}/includes/taglib )
+
 SET ( RCC_TARGETS
 	  Icons.qrc
 	  Styles.qrc
@@ -81,7 +83,7 @@ ADD_DEFINITIONS ( -DProject="${PROJECT_NAME}" )
 FIND_PACKAGE ( Qt5Widgets )
 FIND_PACKAGE ( Qt5Multimedia )
 
-FIND_LIBRARY ( TAGLIB tag )
+FIND_LIBRARY ( TAGLIB tag PATH "${CMAKE_SOURCE_DIR}/libs/taglib/" )
 
 ADD_EXECUTABLE ( ${PROJECT_NAME} ${INCLUDE_FILES} ${SOURCE_FILES} ${RCC_TARGETS} )
 TARGET_LINK_LIBRARIES ( ${PROJECT_NAME} Qt5::Widgets Qt5::Multimedia ${TAGLIB} )

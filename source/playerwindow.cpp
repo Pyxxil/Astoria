@@ -12,12 +12,12 @@
 // good thing to do, but it solves this problem for now.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <mpegfile.h>
-#include <attachedpictureframe.h>
-#include <id3v2tag.h>
-#include <id3v2extendedheader.h>
-#include <mp4tag.h>
-#include <mp4file.h>
+#include "mpegfile.h"
+#include "attachedpictureframe.h"
+#include "id3v2tag.h"
+#include "id3v2extendedheader.h"
+#include "mp4tag.h"
+#include "mp4file.h"
 #pragma GCC diagnostic pop
 
 #include "includes/controls/durationcontrols.hpp"

@@ -6,7 +6,7 @@
 // good thing to do, but it solves this problem for now.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <fileref.h>
+#include "fileref.h"
 #pragma GCC diagnostic pop
 
 #include <QString>
@@ -16,7 +16,7 @@
 class Song
 {
 public:
-        Song(const QFileInfo &);
+        explicit Song(const QFileInfo &);
         Song(const Song &other);
 
         ~Song() = default;
@@ -33,3 +33,4 @@ private:
 };
 
 #endif //SONG_HPP
+

@@ -34,7 +34,7 @@ signals:
         void libraryUpdated();
 
 public:
-        LibraryModel();
+        explicit LibraryModel();
         ~LibraryModel();
 
         int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
