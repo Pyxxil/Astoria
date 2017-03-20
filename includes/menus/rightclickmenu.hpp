@@ -5,28 +5,28 @@
 
 #include "includes/library/song.hpp"
 
-class RightClickMenu: public QMenu
+class RightClickMenu : public QMenu
 {
 Q_OBJECT
 
 signals:
-    void playThisNext();
-    void playThisNow();
-    void updateLibrary();
+        void playThisNext();
+        void playThisNow();
+        void updateLibrary();
 
 public:
-    RightClickMenu(QWidget *parent = nullptr);
-    ~RightClickMenu();
+        RightClickMenu(QWidget *parent = nullptr);
+        ~RightClickMenu();
 
 public slots:
-    void display(QPoint point, const Song &songAtRow);
-    void editMetadata();
+        void display(QPoint point, const Song &songAtRow);
+        void editMetadata();
 
 private:
-    Song selectedSong;
+        Song selectedSong;
 
-    QAction *playAction;
-    QAction *editMetadataAction;
+        QAction *playAction;
+        QAction *editMetadataAction;
 };
 
 #endif //RIGHTCLICKMENU_HPP

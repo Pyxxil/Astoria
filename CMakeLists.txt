@@ -2,16 +2,6 @@ CMAKE_MINIMUM_REQUIRED ( VERSION 3.6 )
 
 PROJECT ( MusicPlayer )
 
-IF ( APPLE )
-	# This isn't exactly perfect, but it would make it so the user can define
-	# their own qt5 installation directory.
-	SET ( CMAKE_PREFIX_PATH $ENV{QT5_INSTALL_DIR} )
-	INCLUDE_DIRECTORIES ( "/usr/local/include/taglib" )
-ELSEIF ( UNIX )
-	# This might not be overly portable.
-	INCLUDE_DIRECTORIES ( "/usr/include/taglib" )
-ENDIF ()
-
 SET ( CMAKE_CXX_STANDARD 14 )
 SET ( CMAKE_INCLUDE_CURRENT_DIR ON )
 
@@ -37,26 +27,30 @@ SET ( SOURCE_FILES
 	  source/main.cpp
 	  source/delegates/hoverdelegate.cpp
 	  source/delegates/normaldelegate.cpp
+	  source/globals.cpp
 	  )
 
 SET ( INCLUDE_FILES
-	  includes/controls/durationcontrols.hpp
-	  includes/controls/sensibleslider.hpp
+      includes/controls/durationcontrols.hpp
+      includes/controls/sensibleslider.hpp
       includes/controls/volumecontrols.hpp
-	  includes/controls/playercontrols.hpp
-	  includes/metadataeditordialog.hpp
+      includes/controls/playercontrols.hpp
+      includes/metadataeditordialog.hpp
       includes/library/librarymodel.hpp
       includes/menus/rightclickmenu.hpp
       includes/library/musicscanner.hpp
-	  includes/library/libraryview.hpp
-	  includes/library/playlist.hpp
-	  includes/trackinformation.hpp
-	  includes/delegates/normaldelegate.hpp
-	  includes/menus/menubar.hpp
-	  includes/delegates/hoverdelegate.hpp
+      includes/library/libraryview.hpp
+      includes/library/playlist.hpp
+      includes/trackinformation.hpp
+      includes/delegates/normaldelegate.hpp
+      includes/menus/menubar.hpp
+      includes/delegates/hoverdelegate.hpp
       includes/playerwindow.hpp
-	  includes/library/song.hpp
+      includes/library/song.hpp
+      includes/globals.hpp
 	  )
+
+INCLUDE_DIRECTORIES ( ${CMAKE_SOURCE_DIR}/includes/taglib )
 
 SET ( RCC_TARGETS
 	  Icons.qrc
@@ -79,7 +73,7 @@ ADD_DEFINITIONS ( -DProject="${PROJECT_NAME}" )
 FIND_PACKAGE ( Qt5Widgets )
 FIND_PACKAGE ( Qt5Multimedia )
 
-FIND_LIBRARY ( TAGLIB tag )
+FIND_LIBRARY ( TAGLIB tag PATH "${CMAKE_SOURCE_DIR}/libs/taglib/" )
 
 ADD_EXECUTABLE ( ${PROJECT_NAME} ${INCLUDE_FILES} ${SOURCE_FILES} ${RCC_TARGETS} )
 TARGET_LINK_LIBRARIES ( ${PROJECT_NAME} Qt5::Widgets Qt5::Multimedia ${TAGLIB} )

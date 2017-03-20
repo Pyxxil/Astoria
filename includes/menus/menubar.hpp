@@ -14,43 +14,42 @@ class MenuBar : public QObject
 Q_OBJECT
 
 signals:
-    void play();
-    void pause();
-    void gotoNextSong();
-    void gotoPreviousSong();
-    void updateLibrary();
+        void play();
+        void pause();
+        void gotoNextSong();
+        void gotoPreviousSong();
+        void updateLibrary();
 
 public:
-    MenuBar(PlayerWindow *parent);
-    ~MenuBar();
+        MenuBar(PlayerWindow *parent);
+        ~MenuBar();
 
-    QList<QMenu *> &getAllMenus();
+        QList<QMenu *> &getAllMenus();
 
 private slots:
-    void playOrPause();
-    void playPauseChangeText(QMediaPlayer::State);
-    void playPreviousSong();
-    void playNextSong();
-    void libraryScanDirectory();
+        void playOrPause();
+        void playPauseChangeText(QMediaPlayer::State);
+        void playPreviousSong();
+        void playNextSong();
+        void libraryScanDirectory();
 
 private:
-    void setUpMenus();
-    void setUpActions();
-    void connectActions();
+        void setUpMenus();
+        void setUpActions();
+        void connectActions();
 
-    QList<QMenu *> menus;
+        QList<QMenu *> menus;
 
-    PlayerWindow *parent;
+        PlayerWindow *parent;
 
-    QMenu *fileMenu;
-    QMenu *controlsMenu;
+        QMenu *fileMenu;
+        QMenu *controlsMenu;
 
-    QAction *scanDir;
+        QAction *scanDir;
 
-    QAction *nextSong;
-    QAction *previousSong;
-    QAction *playPause;
+        QAction *nextSong;
+        QAction *previousSong;
+        QAction *playPause;
 };
-
 
 #endif //MENUBAR_HPP

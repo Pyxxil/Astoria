@@ -8,14 +8,13 @@ class Playlist : public QMediaPlaylist
 Q_OBJECT
 
 public:
-    Playlist();
+        explicit Playlist();
 
-    void next();
-    void previous();
+        void next();
+        void previous();
 
 private:
 
 };
-
 
 #endif //PLAYLIST_HPP

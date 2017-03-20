@@ -6,7 +6,7 @@
 // good thing to do, but it solves this problem for now.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <fileref.h>
+#include "fileref.h"
 #pragma GCC diagnostic pop
 
 #include <QString>
@@ -16,21 +16,21 @@
 class Song
 {
 public:
-    Song(const QFileInfo &);
-    Song(const Song &other);
+        explicit Song(const QFileInfo &);
+        Song(const Song &other);
 
-    ~Song() = default;
+        ~Song() = default;
 
-    const QMap<QString, QString> &getMetadata() const;
+        const QMap<QString, QString> &getMetadata() const;
 
-    QString filePath;
-    TagLib::FileRef file;
+        QString filePath;
+        TagLib::FileRef file;
 
-    void updateMetadata();
+        void updateMetadata();
 
 private:
-    QMap<QString, QString> metadata;
+        QMap<QString, QString> metadata;
 };
 
-
 #endif //SONG_HPP
+

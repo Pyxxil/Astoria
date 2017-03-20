@@ -3,22 +3,25 @@
 #include <QVBoxLayout>
 
 TrackInformation::TrackInformation(QWidget *parent, int minWidth, int maxWidth)
-    : QWidget(parent)
+        : QWidget(parent)
 {
-    songLabel = new QLabel(this);
-    artistLabel = new QLabel(this);
+        songLabel = new QLabel(this);
+        artistLabel = new QLabel(this);
 
-    setLayout(new QVBoxLayout());
-    layout()->addWidget(songLabel);
-    layout()->addWidget(artistLabel);
+        // Move it a little closer to the controls to it's right.
+        setContentsMargins(0, 0, -10, 0);
 
-    setMinimumWidth(minWidth);
-    setMaximumWidth(maxWidth);
+        setLayout(new QVBoxLayout());
+        layout()->addWidget(songLabel);
+        layout()->addWidget(artistLabel);
+
+        setMinimumWidth(minWidth);
+        setMaximumWidth(maxWidth);
 }
 
 void TrackInformation::updateLabels(QString artist, QString song)
 {
-    // TODO: Make this text scrollable (Marquee style).
-    songLabel->setText(song);
-    artistLabel->setText(artist);
+        // TODO: Make this text scrollable (Marquee style).
+        songLabel->setText(song);
+        artistLabel->setText(artist);
 }

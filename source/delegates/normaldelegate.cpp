@@ -9,5 +9,5 @@ NormalDelegate::NormalDelegate()
 
 void NormalDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyledItemDelegate::paint(painter, option, index);
+        QStyledItemDelegate::paint(painter, option, index);
 }
