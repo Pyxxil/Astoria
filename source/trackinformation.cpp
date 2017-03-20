@@ -5,6 +5,7 @@
 TrackInformation::TrackInformation(QWidget *parent, int minWidth, int maxWidth)
         : QWidget(parent)
 {
+        // TODO: Make this text scrollable (Marquee style).
         songLabel = new QLabel(this);
         artistLabel = new QLabel(this);
 
@@ -19,9 +20,13 @@ TrackInformation::TrackInformation(QWidget *parent, int minWidth, int maxWidth)
         setMaximumWidth(maxWidth);
 }
 
-void TrackInformation::updateLabels(QString artist, QString song)
+/**
+ * Update the displayed text.
+ * @param newArtist The new artist
+ * @param newSongTitle The new song title
+ */
+void TrackInformation::updateLabels(QString newArtist, QString newSongTitle)
 {
-        // TODO: Make this text scrollable (Marquee style).
-        songLabel->setText(song);
-        artistLabel->setText(artist);
+        songLabel->setText(newSongTitle);
+        artistLabel->setText(newArtist);
 }

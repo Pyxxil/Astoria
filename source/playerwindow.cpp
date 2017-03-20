@@ -42,7 +42,7 @@
  *	- Saveability
  *	    - Save state
  *	    - Save library
- *	    - Save playlists
+ *	    - Save playlist's
  *	- Edit file metadata [*]
  *
  * TODO: Fixes
@@ -53,7 +53,7 @@
  *      - Audio stuff
  *        - Global media player
  *      - UI stuff
- *        - Width & height perecentages
+ *        - Width & height percentages
  *  - Catch the window closing to do the following:
  *      - Saving
  *      - De-initialising items in the global namespace
@@ -64,6 +64,9 @@ PlayerWindow::PlayerWindow(QWidget *parent)
           ui(new Ui::PlayerWindow)
 {
         ui->setupUi(this);
+
+        // Project is defined in CMakeLists.txt
+        setWindowTitle(Project);
 
         QFile styleSheet(":/StyleSheet.qss");
         styleSheet.open(QFile::ReadOnly | QFile::Text);
@@ -117,7 +120,6 @@ void PlayerWindow::nextSong()
  * Go to the previous song, unless the time played into the current song is
  * less than 10 seconds.
  */
-
 void PlayerWindow::previousSong()
 {
         // TODO: Make the time to go to the previous song adjustable
@@ -145,7 +147,6 @@ void PlayerWindow::timeSeek(int time)
  *      - The information displayed below the cover art, and to the left of the controls.
  *      - We also want to update the cover art.
  */
-
 void PlayerWindow::metaDataChanged()
 {
         emit durationChanged(Globals::getAudioInstance()->duration());
@@ -165,6 +166,10 @@ void PlayerWindow::metaDataChanged()
         loadCoverArt(song);
 }
 
+/*
+ * Either begin playing the song, or continue playing the current song (the latter should be less
+ * likely of an occurrence).
+ */
 void PlayerWindow::play()
 {
         if (!Globals::getPlaylistInstance()->isEmpty()) {
@@ -172,6 +177,9 @@ void PlayerWindow::play()
         }
 }
 
+/**
+ * Play a song right now.
+ */
 void PlayerWindow::playNow()
 {
         // TODO: Fix this.
@@ -180,6 +188,10 @@ void PlayerWindow::playNow()
         emit Globals::getAudioInstance()->play();
 }
 
+/**
+ * When the user clicks on the library, we want to show them a menu that they can use.
+ * @param pos Where the user clicked.
+ */
 void PlayerWindow::customMenuRequested(QPoint pos)
 {
         if (libraryView->indexAt(pos).isValid()) {
@@ -307,6 +319,10 @@ void PlayerWindow::setupUI()
         ui->centralWidget->setLayout(endLayout);
 }
 
+/**
+ * Load the cover art of the currently playing song, and put it on the display.
+ * @param song The currently playing song.
+ */
 void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 {
         QMimeDatabase db;
@@ -316,14 +332,16 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 
         if (codec.name() == "audio/mp4") {
                 TagLib::MP4::File mp4(song.file()->name());
-                TagLib::MP4::CoverArtList coverArtList =
-                        mp4.tag()->itemListMap()["covr"].toCoverArtList();
+                if (mp4.tag() && mp4.tag()->itemListMap().contains("covr")) {
+                        TagLib::MP4::CoverArtList coverArtList =
+                                mp4.tag()->itemListMap()["covr"].toCoverArtList();
 
-                if (!coverArtList.isEmpty()) {
-                        TagLib::MP4::CoverArt coverArt = coverArtList.front();
-                        image.loadFromData((const uchar *) coverArt.data().data(),
-                                           coverArt.data().size());
-                        coverArtNotFound = false;
+                        if (!coverArtList.isEmpty()) {
+                                TagLib::MP4::CoverArt coverArt = coverArtList.front();
+                                image.loadFromData((const uchar *) coverArt.data().data(),
+                                                   coverArt.data().size());
+                                coverArtNotFound = false;
+                        }
                 }
         } else if (codec.name() == "audio/mpeg") {
                 TagLib::MPEG::File file(song.file()->name());
