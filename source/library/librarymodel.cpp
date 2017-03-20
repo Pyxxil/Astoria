@@ -10,9 +10,9 @@ LibraryModel::LibraryModel()
         : rows(0)
 {
         columnHeaders = {
+                "Title",
                 "Artist",
                 "Album",
-                "Title",
                 "Genre",
                 "Duration",
         };
