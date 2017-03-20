@@ -2,16 +2,6 @@ CMAKE_MINIMUM_REQUIRED ( VERSION 3.6 )
 
 PROJECT ( MusicPlayer )
 
-IF ( APPLE )
-	# This isn't exactly perfect, but it would make it so the user can define
-	# their own qt5 installation directory.
-	SET ( CMAKE_PREFIX_PATH $ENV{QT5_INSTALL_DIR} )
-	#INCLUDE_DIRECTORIES ( "/usr/local/include/taglib" )
-ELSEIF ( UNIX )
-	# This might not be overly portable.
-	#INCLUDE_DIRECTORIES ( "/usr/include/taglib" )
-ENDIF ()
-
 SET ( CMAKE_CXX_STANDARD 14 )
 SET ( CMAKE_INCLUDE_CURRENT_DIR ON )
 

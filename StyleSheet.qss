@@ -305,7 +305,8 @@ QScrollBar::sub-line:horizontal
     subcontrol-origin: margin;
 }
 
-QScrollBar::add-line:horizontal:hover,QScrollBar::add-line:horizontal:on
+QScrollBar::add-line:horizontal:hover,
+QScrollBar::add-line:horizontal:on
 {
     height: 10px;
     width: 10px;
@@ -336,11 +337,9 @@ QScrollBar::sub-page:horizontal
 
 QScrollBar:vertical
 {
-    background-color: #2A2929;
+    background-color: transparent;
     width: 15px;
-    margin: 15px 3px 15px 3px;
-    border: 1px transparent #2A2929;
-    border-radius: 4px;
+    margin: 0px 3px 0px 2px;
 }
 
 QScrollBar::handle:vertical
@@ -350,25 +349,8 @@ QScrollBar::handle:vertical
     border-radius: 4px;
 }
 
-QScrollBar::sub-line:vertical
-{
-    margin: 3px 0px 3px 0px;
-    height: 10px;
-    width: 10px;
-    subcontrol-position: top;
-    subcontrol-origin: margin;
-}
-
-QScrollBar::add-line:vertical
-{
-    margin: 3px 0px 3px 0px;
-    height: 10px;
-    width: 10px;
-    subcontrol-position: bottom;
-    subcontrol-origin: margin;
-}
-
-QScrollBar::sub-line:vertical:hover,QScrollBar::sub-line:vertical:on
+QScrollBar::sub-line:vertical:hover,
+QScrollBar::sub-line:vertical:on
 {
     height: 10px;
     width: 10px;
@@ -633,7 +615,6 @@ QTabWidget::pane
 QTabWidget::tab-bar
 {
     left: 5px;
- /* move to the right by 5px */;
 }
 
 QTabBar
