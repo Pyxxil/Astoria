@@ -4,6 +4,16 @@
 #include <QPushButton>
 #include <QDebug>
 
+#define EDITED(flag) edits |= (flag);         \
+        if (!saveButton->isEnabled()) {       \
+                saveButton->setEnabled(true); \
+        }
+
+#define UNEDIT(flag) edits ^= (flag);          \
+        if (edits == 0) {                      \
+                saveButton->setEnabled(false); \
+        }
+
 MetadataEditorDialog::MetadataEditorDialog(QWidget *parent)
         : QDialog(parent),
           ui(new Ui::MetadataEditorDialog),
@@ -54,17 +64,11 @@ void MetadataEditorDialog::setupMetadata(Song &song)
 void MetadataEditorDialog::albumTextChanged(const QString &)
 {
         if (ui->albumTextbox->text() == metadata["Album"]) {
-                edits ^= AlbumText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(AlbumText);
                 return;
         }
 
-        edits |= AlbumText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
+        EDITED(AlbumText);
 }
 
 void MetadataEditorDialog::trackTextChanged(const QString &newText)
@@ -72,10 +76,7 @@ void MetadataEditorDialog::trackTextChanged(const QString &newText)
         bool converted = false;
 
         if (newText == metadata["Track"]) {
-                edits ^= TrackText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(TrackText);
                 ui->trackErrorLabel->setText("");
                 return;
         }
@@ -83,67 +84,43 @@ void MetadataEditorDialog::trackTextChanged(const QString &newText)
         newText.toUInt(&converted);
         if (!converted) {
                 ui->trackErrorLabel->setText("Invalid track number");
-                edits ^= TrackText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(TrackText);
                 return;
         }
 
         ui->trackErrorLabel->setText("");
 
-        edits |= TrackText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
+       EDITED(TrackText);
 }
 
 void MetadataEditorDialog::artistTextChanged(const QString &newText)
 {
         if (newText == metadata["Artist"]) {
-                edits ^= ArtistText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(ArtistText);
                 return;
         }
 
-        edits |= ArtistText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
+        EDITED(ArtistText);
 }
 
 void MetadataEditorDialog::genreTextChanged(const QString &newText)
 {
         if (newText == metadata["Genre"]) {
-                edits ^= GenreText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(GenreText);
                 return;
         }
 
-        edits |= GenreText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
+        EDITED(GenreText);
 }
 
 void MetadataEditorDialog::songTitleTextChanged(const QString &newText)
 {
         if (newText == metadata["Title"]) {
-                edits ^= TitleText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(TitleText);
                 return;
         }
 
-        edits |= TitleText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
+        EDITED(TitleText);
 }
 
 void MetadataEditorDialog::yearTextChanged(const QString &newText)
@@ -151,28 +128,19 @@ void MetadataEditorDialog::yearTextChanged(const QString &newText)
         bool converted = false;
 
         if (newText == metadata["Year"]) {
-                edits ^= YearText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(YearText);
                 return;
         }
 
         newText.toUInt(&converted);
         if (!converted) {
                 ui->yearErrorLabel->setText("Invalid year");
-                edits ^= YearText;
-                if (edits == 0) {
-                        saveButton->setEnabled(false);
-                }
+                UNEDIT(YearText);
                 return;
         }
 
         ui->yearErrorLabel->setText("");
-        edits |= YearText;
-        if (!saveButton->isEnabled()) {
-                saveButton->setEnabled(true);
-        }
+        EDITED(YearText);
 }
 
 /*
