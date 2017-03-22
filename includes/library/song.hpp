@@ -6,7 +6,10 @@
 // good thing to do, but it solves this problem for now.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #include "fileref.h"
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 
 #include <QString>

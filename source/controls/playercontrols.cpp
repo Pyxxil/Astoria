@@ -3,14 +3,14 @@
 #include <QToolButton>
 #include <QBoxLayout>
 
-#include "includes/globals.hpp"
+#include "includes/astoria.hpp"
 
 static constexpr int iconWidth = 20;
 static constexpr int iconHeight = 20;
 
 PlayerControls::PlayerControls(QWidget *parent)
         : QWidget(parent),
-          playerState(Globals::getAudioInstance()->state())
+          playerState(Astoria::getAudioInstance()->state())
 {
         // Move it closer to the library above it, and the duration control below it
         setContentsMargins(0, -20, 0, -10);

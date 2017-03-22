@@ -4,7 +4,7 @@
 #include <QMediaPlayer>
 
 #include "includes/library/musicscanner.hpp"
-#include "includes/globals.hpp"
+#include "includes/astoria.hpp"
 
 LibraryModel::LibraryModel()
         : rows(0)
@@ -172,7 +172,7 @@ void LibraryModel::updateLibrary(QList<Song> newSongs)
                         library.append(song);
                         endInsertRows();
                         ++rows;
-                        Globals::getPlaylistInstance()->addMedia(QUrl::fromLocalFile(song.filePath));
+                        Astoria::getPlaylistInstance()->addMedia(QUrl::fromLocalFile(song.filePath));
                         altered = true;
                 }
         }
@@ -235,13 +235,13 @@ void LibraryModel::updateMetadata()
         library.insert(mightBeUpdated.row(), song);
         emit dataChanged(QModelIndex(), QModelIndex());
 
-        if (library.at(mightBeUpdated.row()).filePath == Globals::getCurrentSong().toString().remove(0, 7)) {
+        if (library.at(mightBeUpdated.row()).filePath == Astoria::getCurrentSong().toString().remove(0, 7)) {
                 /* The current song was edited, so we need to update the following:
                  *      - Duration
                  *      - Window Title
                  *      - Track Information
                  */
-                emit Globals::getAudioInstance()->metaDataChanged();
+                emit Astoria::getAudioInstance()->metaDataChanged();
         }
 }
 

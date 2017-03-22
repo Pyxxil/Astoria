@@ -6,11 +6,11 @@
 #include <QMediaPlayer>
 
 #include "includes/controls/sensibleslider.hpp"
-#include "includes/globals.hpp"
+#include "includes/astoria.hpp"
 
 VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
         : QWidget(parent),
-          mutedStatus(Globals::getAudioInstance()->isMuted()),
+          mutedStatus(Astoria::getAudioInstance()->isMuted()),
           muteIcon(QPixmap(":/icons/Mute.png")),
           lowVolumeIcon(QPixmap(":/icons/VolumeLow.png")),
           mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png")),
@@ -38,7 +38,7 @@ VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
         layout->addWidget(volumeSlider);
         setLayout(layout);
 
-        setVolume(Globals::getAudioInstance()->volume());
+        setVolume(Astoria::getAudioInstance()->volume());
 }
 
 int VolumeControls::getVolume() const

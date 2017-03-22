@@ -21,7 +21,7 @@ signals:
         void updateLibrary();
 
 public:
-        MenuBar(PlayerWindow *parent);
+        MenuBar(PlayerWindow *t_parent);
         ~MenuBar();
 
         QList<QMenu *> &getAllMenus();
@@ -40,7 +40,7 @@ private:
 
         QList<QMenu *> menus;
 
-        PlayerWindow *parent;
+        PlayerWindow *m_parent;
 
         QMenu *fileMenu;
         QMenu *controlsMenu;
