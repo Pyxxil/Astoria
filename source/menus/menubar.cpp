@@ -4,10 +4,10 @@
 
 #include "includes/playerwindow.hpp"
 
-#include "includes/globals.hpp"
+#include "includes/astoria.hpp"
 
-MenuBar::MenuBar(PlayerWindow *parent)
-        : parent(parent)
+MenuBar::MenuBar(PlayerWindow *t_parent)
+        : m_parent(t_parent)
 {
         setUpMenus();
         setUpActions();
@@ -70,7 +70,7 @@ void MenuBar::connectActions()
 void MenuBar::playOrPause()
 {
         // TODO: Change this, it's a bad way to do what I want.
-        if (Globals::getAudioInstance()->state() == QMediaPlayer::PlayingState) {
+        if (Astoria::getAudioInstance()->state() == QMediaPlayer::PlayingState) {
                 emit pause();
         } else {
                 emit play();

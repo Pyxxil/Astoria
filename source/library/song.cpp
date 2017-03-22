@@ -11,8 +11,8 @@
 
 #include <QDebug>
 
-Song::Song(const QFileInfo &filePath)
-        : filePath(filePath.absoluteFilePath())
+Song::Song(const QFileInfo &t_filePath)
+        : filePath(t_filePath.absoluteFilePath())
 {
         file = TagLib::FileRef(this->filePath.toStdString().c_str());
 

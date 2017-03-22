@@ -12,12 +12,15 @@
 // good thing to do, but it solves this problem for now.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #include "mpegfile.h"
 #include "attachedpictureframe.h"
 #include "id3v2tag.h"
 #include "id3v2extendedheader.h"
 #include "mp4tag.h"
 #include "mp4file.h"
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 
 #include "includes/controls/durationcontrols.hpp"
@@ -28,8 +31,7 @@
 #include "includes/library/libraryview.hpp"
 #include "includes/trackinformation.hpp"
 #include "includes/menus/menubar.hpp"
-
-#include "includes/globals.hpp"
+#include "includes/astoria.hpp"
 
 /*
  * TODO: Possible features
@@ -53,7 +55,7 @@
  *      - Audio stuff
  *        - Global media player
  *      - UI stuff
- *        - Width & height perecentages
+ *        - Width & height percentages
  *  - Catch the window closing to do the following:
  *      - Saving
  *      - De-initialising items in the global namespace
@@ -70,7 +72,7 @@ PlayerWindow::PlayerWindow(QWidget *parent)
         QTextStream styles(&styleSheet);
         qApp->setStyleSheet(styles.readAll());
 
-        Globals::init();
+        Astoria::init();
 
         playerControls = new PlayerControls(this);
         volumeControls = new VolumeControls(this, 150, 150);
@@ -108,8 +110,8 @@ PlayerWindow::~PlayerWindow()
 
 void PlayerWindow::nextSong()
 {
-        if (!Globals::getAudioInstance()->playlist()->isEmpty()) {
-                Globals::getAudioInstance()->playlist()->next();
+        if (!Astoria::getAudioInstance()->playlist()->isEmpty()) {
+                Astoria::getAudioInstance()->playlist()->next();
         }
 }
 
@@ -123,7 +125,7 @@ void PlayerWindow::previousSong()
         // TODO: Make the time to go to the previous song adjustable
         // TODO: What to do if the user has pressed go to previous and there aren't any songs
         // TODO: before it? Do we set position to 0, and pause the media? Or just reset the song?
-        QMediaPlayer *player = Globals::getAudioInstance();
+        QMediaPlayer *player = Astoria::getAudioInstance();
         if (player->position() < 10000 && player->playlist()->currentIndex() > 0) {
                 player->playlist()->previous();
         } else {
@@ -133,7 +135,7 @@ void PlayerWindow::previousSong()
 
 void PlayerWindow::timeSeek(int time)
 {
-        Globals::getAudioInstance()->setPosition(time);
+        Astoria::getAudioInstance()->setPosition(time);
 }
 
 /*
@@ -148,10 +150,10 @@ void PlayerWindow::timeSeek(int time)
 
 void PlayerWindow::metaDataChanged()
 {
-        emit durationChanged(Globals::getAudioInstance()->duration());
+        emit durationChanged(Astoria::getAudioInstance()->duration());
         TagLib::FileRef song(
                 QStringToTString(
-                        Globals::getCurrentSong()
+                        Astoria::getCurrentSong()
                                 .toString()
                                 .remove(0, 7))  // Remove the file:// prefix
                         .toCString());
@@ -167,17 +169,17 @@ void PlayerWindow::metaDataChanged()
 
 void PlayerWindow::play()
 {
-        if (!Globals::getPlaylistInstance()->isEmpty()) {
-                emit Globals::getAudioInstance()->play();
+        if (!Astoria::getPlaylistInstance()->isEmpty()) {
+                emit Astoria::getAudioInstance()->play();
         }
 }
 
 void PlayerWindow::playNow()
 {
         // TODO: Fix this.
-        Globals::getPlaylistInstance()->insertMedia(0, library->get(libraryView->currentIndex().row()));
-        Globals::getPlaylistInstance()->setCurrentIndex(0);
-        emit Globals::getAudioInstance()->play();
+        Astoria::getPlaylistInstance()->insertMedia(0, library->get(libraryView->currentIndex().row()));
+        Astoria::getPlaylistInstance()->setCurrentIndex(0);
+        emit Astoria::getAudioInstance()->play();
 }
 
 void PlayerWindow::customMenuRequested(QPoint pos)
@@ -197,7 +199,7 @@ void PlayerWindow::updatePlaylist()
 void PlayerWindow::setupConnections()
 {
         // TODO: Think about moving some of these into their respective classes
-        QMediaPlayer *player = Globals::getAudioInstance();
+        QMediaPlayer *player = Astoria::getAudioInstance();
 
         connect(playerControls, SIGNAL(play()),
                 this, SLOT(play()));
@@ -321,8 +323,8 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 
                 if (!coverArtList.isEmpty()) {
                         TagLib::MP4::CoverArt coverArt = coverArtList.front();
-                        image.loadFromData((const uchar *) coverArt.data().data(),
-                                           coverArt.data().size());
+                        image.loadFromData(reinterpret_cast<const uchar *>(coverArt.data().data()),
+                                           static_cast<int>(coverArt.data().size()));
                         coverArtNotFound = false;
                 }
         } else if (codec.name() == "audio/mpeg") {
@@ -333,8 +335,8 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
                         TagLib::ID3v2::AttachedPictureFrame
                                 *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
 
-                        image.loadFromData((const uchar *) coverImg->picture().data(),
-                                           coverImg->picture().size());
+                        image.loadFromData(reinterpret_cast<const uchar *>(coverImg->picture().data()),
+                                           static_cast<int>(coverImg->picture().size()));
                         coverArtNotFound = false;
                 }
         }
@@ -348,6 +350,6 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 
 void PlayerWindow::closeEvent(QCloseEvent *event)
 {
-        Globals::deInit();
+        Astoria::deInit();
         QMainWindow::closeEvent(event);
 }
