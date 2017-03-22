@@ -146,7 +146,6 @@ void MetadataEditorDialog::yearTextChanged(const QString &newText)
 /*
  * Save any changed data to disk, and update the library.
  */
-
 void MetadataEditorDialog::save()
 {
         if (edits == 0) {

@@ -74,8 +74,10 @@ QVariant LibraryModel::headerData(int section, Qt::Orientation orientation, int 
                         case 1:
                         case 2:
                         case 3:
-                        case 4:return getColumnHeader(section);
-                        default:return QVariant();
+                        case 4:
+                                return getColumnHeader(section);
+                        default:
+                                return QVariant();
                         }
                 }
         }
@@ -104,8 +106,10 @@ QVariant LibraryModel::data(const QModelIndex &index, int role) const
                         case 1:
                         case 2:
                         case 3:
-                        case 4:return metadata[columnHeader];
-                        default:return QVariant();
+                        case 4:
+                                return metadata[columnHeader];
+                        default:
+                                return QVariant();
                         }
                 }
         }
@@ -119,8 +123,16 @@ void LibraryModel::openDirectory()
         scanDirectory(dir);
 }
 
+/**
+ * Scan a given directory to find all song files.
+ * At the moment it only does a search of the files in that directory, not any sub-directories.
+ *
+ * @param directory The directory to look for song files in.
+ */
 void LibraryModel::scanDirectory(QString &directory)
 {
+        // TODO: Should sub-directories be searched through?
+        // TODO:  - Might cause a lengthy process.
         QDir musicDirectory(directory);
         QFileInfoList musicFiles = musicDirectory.entryInfoList(supportedFormats);
         MusicScanner *scanner = new MusicScanner(musicFiles);
@@ -129,15 +141,24 @@ void LibraryModel::scanDirectory(QString &directory)
         scanner->start();
 }
 
-void LibraryModel::updateLibrary(QList<Song> newItems)
+/**
+ * After searching a directory, the scanner will pass the song files found to this method.
+ * We want to update the library to reflect any new items added, so long as they aren't
+ * duplicates, and update the view, so that any changes are available to the user as soon
+ * as possible.
+ *
+ * @param newSongs The song files found in the directory.
+ */
+void LibraryModel::updateLibrary(QList<Song> newSongs)
 {
-        if (newItems.length() == 0) {
+        if (newSongs.length() == 0) {
+                // No need to try to add anything if nothing was found.
                 return;
         }
 
         bool altered = false;
 
-        for (auto &song : newItems) {
+        for (auto &song : newSongs) {
                 bool notInLibrary = true;
                 for (auto &songInLibrary : library) {
                         if (song.filePath == songInLibrary.filePath) {
@@ -171,6 +192,11 @@ const QString &LibraryModel::getColumnHeader(int column) const
         return columnHeaders.at(column);
 }
 
+/**
+ * Sort a given column.
+ *
+ * @param column The column to sort.
+ */
 void LibraryModel::sortByColumn(int column)
 {
         switch (sort) {
