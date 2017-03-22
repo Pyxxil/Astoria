@@ -67,8 +67,8 @@ IF ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 	SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Wsign-conversion" )
 	SET ( CMAKE_VERBOSE_MAKEFILE ON )
 ELSE ()
-	# This assumes without specifying the build as debug, that it's a
-	# release build
+	# This assumes that without specifying the build as debug, that it's a
+	# release build.
 	SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2" )
 ENDIF ()
 
@@ -77,7 +77,8 @@ ADD_DEFINITIONS ( -DProject="${PROJECT_NAME}" )
 FIND_PACKAGE ( Qt5Widgets )
 FIND_PACKAGE ( Qt5Multimedia )
 
-FIND_LIBRARY ( TAGLIB tag PATH "${CMAKE_SOURCE_DIR}/libs/taglib/" )
+FIND_LIBRARY ( TAGLIB tag
+			   PATHS "${CMAKE_SOURCE_DIR}/libs/taglib" NO_DEFAULT_PATH)
 
 ADD_EXECUTABLE ( ${PROJECT_NAME} ${INCLUDE_FILES} ${SOURCE_FILES} ${RCC_TARGETS} )
 TARGET_LINK_LIBRARIES ( ${PROJECT_NAME} Qt5::Widgets Qt5::Multimedia ${TAGLIB} )
