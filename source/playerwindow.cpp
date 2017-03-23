@@ -37,6 +37,7 @@
  * TODO: Possible features
  * To add features list
  *	- Allow the stylesheet to be read from a file (.qss file) (This is sort of done already)
+ *	    - Might have some default themes (Dark, Light, etc.)
  *	- User adjustable previous song time limit (that is, how long into a song does pressing
  *	  the previous button restart the song)
  *	- Allow the user to remove/add headers and change the order of them
@@ -70,7 +71,7 @@ PlayerWindow::PlayerWindow(QWidget *parent)
         // Project is defined in CMakeLists.txt
         setWindowTitle(Project);
 
-        QFile styleSheet(":/StyleSheet.qss");
+        QFile styleSheet(":/assets/StyleSheet.qss");
         styleSheet.open(QFile::ReadOnly | QFile::Text);
         QTextStream styles(&styleSheet);
         qApp->setStyleSheet(styles.readAll());
@@ -340,8 +341,8 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
 
                         if (!coverArtList.isEmpty()) {
                                 TagLib::MP4::CoverArt coverArt = coverArtList.front();
-                                image.loadFromData((const uchar *) coverArt.data().data(),
-                                                   coverArt.data().size());
+                                image.loadFromData(reinterpret_cast<const uchar *>(coverArt.data().data()),
+                                                   static_cast<int>(coverArt.data().size()));
                                 coverArtNotFound = false;
                         }
                 }
@@ -360,7 +361,7 @@ void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
         }
 
         if (coverArtNotFound) {
-                image.load(":/CoverArtUnavailable.png");
+                image.load(":/assets/CoverArtUnavailable.png");
         }
 
         coverArtLabel->setPixmap(QPixmap::fromImage(image));

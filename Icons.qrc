@@ -1,19 +1,19 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource>
-        <file>icons/Previous.png</file>
-        <file>icons/PreviousActive.png</file>
-        <file>icons/Next.png</file>
-        <file>icons/NextActive.png</file>
-        <file>icons/Pause.png</file>
-        <file>icons/Play.png</file>
-        <file>icons/ShuffleOn.png</file>
-        <file>icons/ShuffleOff.png</file>
-        <file>icons/RepeatOn.png</file>
-        <file>icons/RepeatOff.png</file>
-        <file>icons/Mute.png</file>
-        <file>icons/VolumeLow.png</file>
-        <file>icons/VolumeMedium.png</file>
-        <file>icons/VolumeHigh.png</file>
+        <file>assets/icons/Previous.png</file>
+        <file>assets/icons/PreviousActive.png</file>
+        <file>assets/icons/Next.png</file>
+        <file>assets/icons/NextActive.png</file>
+        <file>assets/icons/Pause.png</file>
+        <file>assets/icons/Play.png</file>
+        <file>assets/icons/ShuffleOn.png</file>
+        <file>assets/icons/ShuffleOff.png</file>
+        <file>assets/icons/RepeatOn.png</file>
+        <file>assets/icons/RepeatOff.png</file>
+        <file>assets/icons/Mute.png</file>
+        <file>assets/icons/VolumeLow.png</file>
+        <file>assets/icons/VolumeMedium.png</file>
+        <file>assets/icons/VolumeHigh.png</file>
     </qresource>
 </RCC>

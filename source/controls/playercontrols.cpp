@@ -16,20 +16,20 @@ PlayerControls::PlayerControls(QWidget *parent)
         setContentsMargins(0, -20, 0, -10);
         setStyleSheet("border: none;");
 
-        playPauseIcon.addPixmap(QPixmap(":/icons/Play.png"), QIcon::Normal, QIcon::On);
-        playPauseIcon.addPixmap(QPixmap(":/icons/Pause.png"), QIcon::Normal, QIcon::Off);
+        playPauseIcon.addPixmap(QPixmap(":/assets/icons/Play.png"), QIcon::Normal, QIcon::On);
+        playPauseIcon.addPixmap(QPixmap(":/assets/icons/Pause.png"), QIcon::Normal, QIcon::Off);
 
-        shuffleIcon.addPixmap(QPixmap(":/icons/ShuffleOff.png"), QIcon::Normal, QIcon::Off);
-        shuffleIcon.addPixmap(QPixmap(":/icons/ShuffleOn.png"), QIcon::Normal, QIcon::On);
+        shuffleIcon.addPixmap(QPixmap(":/assets/icons/ShuffleOff.png"), QIcon::Normal, QIcon::Off);
+        shuffleIcon.addPixmap(QPixmap(":/assets/icons/ShuffleOn.png"), QIcon::Normal, QIcon::On);
 
-        repeatIcon.addPixmap(QPixmap(":/icons/RepeatOff.png"), QIcon::Normal, QIcon::Off);
-        repeatIcon.addPixmap(QPixmap(":/icons/RepeatOn.png"), QIcon::Normal, QIcon::On);
+        repeatIcon.addPixmap(QPixmap(":/assets/icons/RepeatOff.png"), QIcon::Normal, QIcon::Off);
+        repeatIcon.addPixmap(QPixmap(":/assets/icons/RepeatOn.png"), QIcon::Normal, QIcon::On);
 
-        nextIcon.addPixmap(QPixmap(":/icons/Next.png"), QIcon::Normal, QIcon::On);
-        nextIcon.addPixmap(QPixmap(":/icons/NextActive.png"), QIcon::Active, QIcon::On);
+        nextIcon.addPixmap(QPixmap(":/assets/icons/Next.png"), QIcon::Normal, QIcon::On);
+        nextIcon.addPixmap(QPixmap(":/assets/icons/NextActive.png"), QIcon::Active, QIcon::On);
 
-        previousIcon.addPixmap(QPixmap(":/icons/Previous.png"), QIcon::Normal, QIcon::On);
-        previousIcon.addPixmap(QPixmap(":/icons/PreviousActive.png"), QIcon::Active, QIcon::On);
+        previousIcon.addPixmap(QPixmap(":/assets/icons/Previous.png"), QIcon::Normal, QIcon::On);
+        previousIcon.addPixmap(QPixmap(":/assets/icons/PreviousActive.png"), QIcon::Active, QIcon::On);
 
         playPauseButton = new QToolButton(this);
         playPauseButton->setIcon(playPauseIcon);
