@@ -11,10 +11,10 @@
 VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
         : QWidget(parent),
           mutedStatus(Astoria::getAudioInstance()->isMuted()),
-          muteIcon(QPixmap(":/icons/Mute.png")),
-          lowVolumeIcon(QPixmap(":/icons/VolumeLow.png")),
-          mediumVolumeIcon(QPixmap(":/icons/VolumeMedium.png")),
-          highVolumeIcon(QPixmap(":/icons/VolumeHigh.png"))
+          muteIcon(QPixmap(":/assets/icons/Mute.png")),
+          lowVolumeIcon(QPixmap(":/assets/icons/VolumeLow.png")),
+          mediumVolumeIcon(QPixmap(":/assets/icons/VolumeMedium.png")),
+          highVolumeIcon(QPixmap(":/assets/icons/VolumeHigh.png"))
 {
         volumeIndicatorButton = new QToolButton(this);
         volumeIndicatorButton->setIconSize(QSize(25, 25));

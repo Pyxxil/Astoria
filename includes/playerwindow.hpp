@@ -10,6 +10,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#include "taglib.h"
 #include "fileref.h"
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
@@ -19,10 +20,10 @@ class DurationControls;
 class RightClickMenu;
 class VolumeControls;
 class PlayerControls;
+class CoverArtLabel;
 class LibraryModel;
 class QTableView;
 class MenuBar;
-class QLabel;
 
 namespace Ui
 {
@@ -35,7 +36,7 @@ Q_OBJECT
 
 signals:
         void durationChanged(qint64);
-        void trackInformationChanged(QString, QString);
+        void songChanged(TagLib::FileRef);
 
 public:
         explicit PlayerWindow(QWidget *parent = 0);
@@ -62,14 +63,13 @@ private:
         MenuBar *menu;
         RightClickMenu *rightClickMenu;
 
-        QLabel *coverArtLabel;
+        CoverArtLabel *coverArtLabel;
         QTableView *libraryView;
 
         QImage image;
 
         void setupConnections();
         void setupUI();
-        void loadCoverArt(TagLib::FileRef &song);
 
 protected:
         void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;

@@ -1,9 +1,7 @@
-#ifndef TRACKINFORMATION_HPP
-#define TRACKINFORMATION_HPP
+#ifndef ASTORIA_COVERART_HPP
+#define ASTORIA_COVERART_HPP
 
-#include <QWidget>
 #include <QLabel>
-
 // Taglib, at least on OSX, throws a couple of deprecated declaration warnings
 // which are annoying to see, and interfere with -Werror. This might not be a
 // good thing to do, but it solves this problem for now.
@@ -19,19 +17,19 @@
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 
-class TrackInformation : public QWidget
+class CoverArtLabel : public QLabel
 {
 Q_OBJECT
 
 public:
-        TrackInformation(QWidget *parent = nullptr, int minWidth = 16777215, int maxWidth = 16777215);
+        CoverArtLabel(QWidget *parent = nullptr);
 
 public slots:
-        void updateLabels(TagLib::FileRef);
+        void artChanged(TagLib::FileRef newSong);
+        // void songLoaded();  For later, when setting up loading of songs
 
 private:
-        QLabel *songLabel;
-        QLabel *artistLabel;
+        QImage *coverArtImage = nullptr;
 };
 
-#endif // TRACKINFORMATION_HPP
+#endif //ASTORIA_COVERART_HPP

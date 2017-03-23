@@ -7,22 +7,6 @@
 #include <QTableView>
 #include <QLabel>
 
-// Taglib, at least on OSX, throws a couple of deprecated declaration warnings
-// which are annoying to see, and interfere with -Werror. This might not be a
-// good thing to do, but it solves this problem for now.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#include "mpegfile.h"
-#include "attachedpictureframe.h"
-#include "id3v2tag.h"
-#include "id3v2extendedheader.h"
-#include "mp4tag.h"
-#include "mp4file.h"
-#pragma GCC diagnostic pop
-#pragma GCC diagnostic pop
-
 #include "includes/controls/durationcontrols.hpp"
 #include "includes/controls/playercontrols.hpp"
 #include "includes/controls/volumecontrols.hpp"
@@ -31,12 +15,14 @@
 #include "includes/library/libraryview.hpp"
 #include "includes/trackinformation.hpp"
 #include "includes/menus/menubar.hpp"
+#include "includes/coverartlabel.hpp"
 #include "includes/astoria.hpp"
 
 /*
  * TODO: Possible features
  * To add features list
  *	- Allow the stylesheet to be read from a file (.qss file) (This is sort of done already)
+ *	    - Might have some default themes (Dark, Light, etc.)
  *	- User adjustable previous song time limit (that is, how long into a song does pressing
  *	  the previous button restart the song)
  *	- Allow the user to remove/add headers and change the order of them
@@ -70,7 +56,7 @@ PlayerWindow::PlayerWindow(QWidget *parent)
         // Project is defined in CMakeLists.txt
         setWindowTitle(Project);
 
-        QFile styleSheet(":/StyleSheet.qss");
+        QFile styleSheet(":/assets/StyleSheet.qss");
         styleSheet.open(QFile::ReadOnly | QFile::Text);
         QTextStream styles(&styleSheet);
         qApp->setStyleSheet(styles.readAll());
@@ -94,13 +80,7 @@ PlayerWindow::PlayerWindow(QWidget *parent)
 
         rightClickMenu = new RightClickMenu(this);
 
-        coverArtLabel = new QLabel(this);
-        coverArtLabel->setScaledContents(true);
-        coverArtLabel->setBackgroundRole(QPalette::Base);
-        coverArtLabel->setContentsMargins(10, 0, 0, 0);
-        coverArtLabel->setMaximumSize(200, 200);
-        coverArtLabel->setMinimumSize(200, 200);
-        coverArtLabel->setAlignment(Qt::AlignCenter);
+        coverArtLabel = new CoverArtLabel(this);
 
         setupConnections();
         setupUI();
@@ -162,10 +142,8 @@ void PlayerWindow::metaDataChanged()
         setWindowTitle(QString("%1 - %2")
                                .arg(TStringToQString(song.tag()->artist()))
                                .arg(TStringToQString(song.tag()->title())));
-        emit trackInformationChanged(TStringToQString(song.tag()->artist()),
-                                     TStringToQString(song.tag()->title()));
 
-        loadCoverArt(song);
+        emit songChanged(Astoria::getCurrentTag());
 }
 
 /*
@@ -257,8 +235,8 @@ void PlayerWindow::setupConnections()
         connect(library, SIGNAL(libraryUpdated()),
                 this, SLOT(updatePlaylist()));
 
-        connect(this, SIGNAL(trackInformationChanged(QString, QString)),
-                information, SLOT(updateLabels(QString, QString)));
+        connect(this, SIGNAL(songChanged(TagLib::FileRef)),
+                information, SLOT(updateLabels(TagLib::FileRef)));
         connect(this, SIGNAL(durationChanged(qint64)),
                 durationControls, SLOT(songChanged(qint64)));
 
@@ -273,6 +251,9 @@ void PlayerWindow::setupConnections()
                 this, SLOT(playNow()));
         connect(rightClickMenu, SIGNAL(updateLibrary()),
                 library, SLOT(updateMetadata()));
+
+        connect(this, SIGNAL(songChanged(TagLib::FileRef)),
+                coverArtLabel, SLOT(artChanged(TagLib::FileRef)));
 }
 
 void PlayerWindow::setupUI()
@@ -319,51 +300,6 @@ void PlayerWindow::setupUI()
         endLayout->setContentsMargins(0, 0, 0, 0);
 
         ui->centralWidget->setLayout(endLayout);
-}
-
-/**
- * Load the cover art of the currently playing song, and put it on the display.
- * @param song The currently playing song.
- */
-void PlayerWindow::loadCoverArt(TagLib::FileRef &song)
-{
-        QMimeDatabase db;
-        QMimeType codec = db.mimeTypeForFile(song.file()->name());
-
-        bool coverArtNotFound = true;
-
-        if (codec.name() == "audio/mp4") {
-                TagLib::MP4::File mp4(song.file()->name());
-                if (mp4.tag() && mp4.tag()->itemListMap().contains("covr")) {
-                        TagLib::MP4::CoverArtList coverArtList =
-                                mp4.tag()->itemListMap()["covr"].toCoverArtList();
-
-                        if (!coverArtList.isEmpty()) {
-                                TagLib::MP4::CoverArt coverArt = coverArtList.front();
-                                image.loadFromData((const uchar *) coverArt.data().data(),
-                                                   coverArt.data().size());
-                                coverArtNotFound = false;
-                        }
-                }
-        } else if (codec.name() == "audio/mpeg") {
-                TagLib::MPEG::File file(song.file()->name());
-                TagLib::ID3v2::FrameList frameList = file.ID3v2Tag()->frameList("APIC");
-
-                if (!frameList.isEmpty()) {
-                        TagLib::ID3v2::AttachedPictureFrame
-                                *coverImg = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-
-                        image.loadFromData(reinterpret_cast<const uchar *>(coverImg->picture().data()),
-                                           static_cast<int>(coverImg->picture().size()));
-                        coverArtNotFound = false;
-                }
-        }
-
-        if (coverArtNotFound) {
-                image.load(":/CoverArtUnavailable.png");
-        }
-
-        coverArtLabel->setPixmap(QPixmap::fromImage(image));
 }
 
 void PlayerWindow::closeEvent(QCloseEvent *event)

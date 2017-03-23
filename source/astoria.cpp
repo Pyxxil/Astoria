@@ -26,6 +26,10 @@ QMediaPlaylist *Astoria::getPlaylistInstance()
 {
         return Playlist::playlist;
 }
+TagLib::FileRef Astoria::getCurrentTag()
+{
+        return TagLib::FileRef(getCurrentSong().toString().remove(0, 7).toStdString().c_str());
+}
 
 QUrl Astoria::getCurrentSong()
 {

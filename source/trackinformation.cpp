@@ -25,8 +25,12 @@ TrackInformation::TrackInformation(QWidget *parent, int minWidth, int maxWidth)
  * @param newArtist The new artist
  * @param newSongTitle The new song title
  */
-void TrackInformation::updateLabels(QString newArtist, QString newSongTitle)
+void TrackInformation::updateLabels(TagLib::FileRef newSong)
 {
-        songLabel->setText(newSongTitle);
-        artistLabel->setText(newArtist);
+        if (newSong.isNull() || newSong.tag()->isEmpty()) {
+                return;
+        }
+
+        songLabel->setText(TStringToQString(newSong.tag()->title()));
+        artistLabel->setText(TStringToQString(newSong.tag()->artist()));
 }
