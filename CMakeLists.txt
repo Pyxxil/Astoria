@@ -24,6 +24,7 @@ set ( SOURCE_FILES
       source/astoria/playlist.cpp
       source/library/playlist.cpp
       source/trackinformation.cpp
+      source/coverartlabel.cpp
       source/menus/menubar.cpp
       source/astoria/audio.cpp
       source/playerwindow.cpp
@@ -48,6 +49,7 @@ set ( INCLUDE_FILES
       includes/library/playlist.hpp
       includes/trackinformation.hpp
       includes/menus/menubar.hpp
+      includes/coverartlabel.hpp
       includes/playerwindow.hpp
       includes/library/song.hpp
       includes/astoria.hpp
