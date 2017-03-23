@@ -18,8 +18,6 @@
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 
-#include "includes/astoria.hpp"
-
 CoverArtLabel::CoverArtLabel(QWidget *parent)
         : QLabel(parent),
           coverArtImage(new QImage)
@@ -71,10 +69,9 @@ void CoverArtLabel::artChanged(TagLib::FileRef newSong)
 
                         if (!frameList.isEmpty()) {
                                 TagLib::ID3v2::AttachedPictureFrame *coverImg =
-                                        static_cast<
-                                                TagLib::ID3v2::AttachedPictureFrame *
-                                                >
-                                        (frameList.front());
+                                        static_cast<TagLib::ID3v2::AttachedPictureFrame *>(
+                                                frameList.front()
+                                        );
 
                                 coverArtImage->loadFromData(
                                         reinterpret_cast<const uchar *>(coverImg->picture().data()),

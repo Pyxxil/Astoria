@@ -132,18 +132,13 @@ void PlayerWindow::timeSeek(int time)
 void PlayerWindow::metaDataChanged()
 {
         emit durationChanged(Astoria::getAudioInstance()->duration());
-        TagLib::FileRef song(
-                QStringToTString(
-                        Astoria::getCurrentSong()
-                                .toString()
-                                .remove(0, 7))  // Remove the file:// prefix
-                        .toCString());
+        TagLib::FileRef song(Astoria::getCurrentTag());
 
         setWindowTitle(QString("%1 - %2")
                                .arg(TStringToQString(song.tag()->artist()))
                                .arg(TStringToQString(song.tag()->title())));
 
-        emit songChanged(Astoria::getCurrentTag());
+        emit songChanged(song);
 }
 
 /*
