@@ -3,7 +3,9 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QMediaContent>
+#include <QMediaPlayer>
 
+#include "includes/astoria.hpp"
 #include "includes/playerwindow.hpp"
 #include "includes/controls/sensibleslider.hpp"
 
@@ -35,6 +37,9 @@ DurationControls::DurationControls(QWidget *parent, int minWidth, int maxWidth)
         layout()->addWidget(currentTime);
         layout()->addWidget(durationSlider);
         layout()->addWidget(totalDuration);
+
+        connect(Astoria::getAudioInstance(), SIGNAL(positionChanged(qint64)),
+                this, SLOT(positionChanged(qint64)));
 }
 
 void DurationControls::positionChanged(qint64 position)

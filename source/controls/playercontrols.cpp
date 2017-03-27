@@ -69,6 +69,11 @@ PlayerControls::PlayerControls(QWidget *parent)
         layout()->addWidget(playPauseButton);
         layout()->addWidget(nextButton);
         layout()->addWidget(repeatButton);
+
+        connect(this, SIGNAL(pause()),
+                Astoria::getAudioInstance(), SLOT(pause()));
+        connect(Astoria::getAudioInstance(), SIGNAL(stateChanged(QMediaPlayer::State)),
+                this, SLOT(setState(QMediaPlayer::State)));
 }
 
 void PlayerControls::setState(QMediaPlayer::State state)

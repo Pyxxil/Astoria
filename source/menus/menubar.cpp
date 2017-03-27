@@ -6,12 +6,19 @@
 
 #include "includes/astoria.hpp"
 
+#include "includes/astoria.hpp"
+
 MenuBar::MenuBar(PlayerWindow *t_parent)
         : m_parent(t_parent)
 {
         setUpMenus();
         setUpActions();
         connectActions();
+
+        connect(this, SIGNAL(play()),
+                Astoria::getAudioInstance(), SLOT(play()));
+        connect(this, SIGNAL(pause()),
+                Astoria::getAudioInstance(), SLOT(pause()));
 }
 
 MenuBar::~MenuBar()

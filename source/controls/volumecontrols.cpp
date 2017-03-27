@@ -16,6 +16,16 @@ VolumeControls::VolumeControls(QWidget *parent, int minWidth, int maxWidth)
           mediumVolumeIcon(QPixmap(":/assets/icons/VolumeMedium.png")),
           highVolumeIcon(QPixmap(":/assets/icons/VolumeHigh.png"))
 {
+        connect(this, SIGNAL(changeVolume(int)),
+                Astoria::getAudioInstance(), SLOT(setVolume(int)));
+        connect(this, SIGNAL(mute(bool)),
+                Astoria::getAudioInstance(), SLOT(setMuted(bool)));
+
+        connect(Astoria::getAudioInstance(), SIGNAL(volumeChanged(int)),
+                this, SLOT(setVolume(int)));
+        connect(Astoria::getAudioInstance(), SIGNAL(mutedChanged(bool)),
+                this, SLOT(setMute(bool)));
+
         volumeIndicatorButton = new QToolButton(this);
         volumeIndicatorButton->setIconSize(QSize(25, 25));
         connect(volumeIndicatorButton, SIGNAL(clicked()),
