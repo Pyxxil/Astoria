@@ -63,24 +63,22 @@ PlayerWindow::PlayerWindow(QWidget *parent)
 
         Astoria::init();
 
+        // All widgets in the program
         playerControls = new PlayerControls(this);
         volumeControls = new VolumeControls(this, 150, 150);
         volumeControls->setContentsMargins(0, 0, 5, 0);
         durationControls = new DurationControls(this, 200);
-
+        information = new TrackInformation(this, 200, 200);
+        coverArtLabel = new CoverArtLabel(this);
         library = new LibraryModel;
         libraryView = new LibraryView(this, library);
+
+        rightClickMenu = new RightClickMenu(this);
 
         menu = new MenuBar(this);
         for (const auto &_menu : menu->getAllMenus()) {
                 ui->menuBar->addMenu(_menu);
         }
-
-        information = new TrackInformation(this, 200, 200);
-
-        rightClickMenu = new RightClickMenu(this);
-
-        coverArtLabel = new CoverArtLabel(this);
 
         setupConnections();
         setupUI();
@@ -188,38 +186,20 @@ void PlayerWindow::setupConnections()
 
         connect(playerControls, SIGNAL(play()),
                 this, SLOT(play()));
-        connect(playerControls, SIGNAL(pause()),
-                player, SLOT(pause()));
         connect(playerControls, SIGNAL(next()),
                 this, SLOT(nextSong()));
         connect(playerControls, SIGNAL(previous()),
                 this, SLOT(previousSong()));
-        connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
-                playerControls, SLOT(setState(QMediaPlayer::State)));
 
-        connect(volumeControls, SIGNAL(changeVolume(int)),
-                player, SLOT(setVolume(int)));
-        connect(volumeControls, SIGNAL(mute(bool)),
-                player, SLOT(setMuted(bool)));
-
-        connect(player, SIGNAL(volumeChanged(int)),
-                volumeControls, SLOT(setVolume(int)));
-        connect(player, SIGNAL(mutedChanged(bool)),
-                volumeControls, SLOT(setMute(bool)));
-        connect(player, SIGNAL(positionChanged(qint64)),
-                durationControls, SLOT(positionChanged(qint64)));
         connect(player, SIGNAL(metaDataChanged()),
                 this, SLOT(metaDataChanged()));
+
         connect(player, SIGNAL(stateChanged(QMediaPlayer::State)),
                 menu, SLOT(playPauseChangeText(QMediaPlayer::State)));
 
         connect(durationControls, SIGNAL(seek(int)),
                 this, SLOT(timeSeek(int)));
 
-        connect(menu, SIGNAL(play()),
-                player, SLOT(play()));
-        connect(menu, SIGNAL(pause()),
-                player, SLOT(pause()));
         connect(menu, SIGNAL(gotoNextSong()),
                 this, SLOT(nextSong()));
         connect(menu, SIGNAL(gotoPreviousSong()),
